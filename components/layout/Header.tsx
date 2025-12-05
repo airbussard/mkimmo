@@ -20,9 +20,9 @@ export function Header() {
             <Image
               src="/images/Logo MK Immobilien.png"
               alt={COMPANY_INFO.name}
-              width={180}
-              height={40}
-              className="h-10 w-auto"
+              width={252}
+              height={56}
+              className="h-14 w-auto"
               priority
             />
           </Link>

@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { ConsentBanner } from '@/components/consent/ConsentBanner'
 import { COMPANY_INFO } from '@/config/navigation'
@@ -51,7 +50,6 @@ export default function RootLayout({
     <html lang="de">
       <body className={inter.className}>
         <div className="flex min-h-screen flex-col">
-          <Header />
           <main className="flex-1">{children}</main>
           <Footer />
         </div>

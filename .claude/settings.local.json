@@ -9,7 +9,12 @@
       "Bash(git init:*)",
       "Bash(git add:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: MKImmo Immobilien-Website\n\nVollständige Next.js 14 Immobilien-Website für Möller & Knabe GbR:\n\n- Makler-Bereich: Immobilienübersicht, Detailseiten, Kaufnebenkosten-Rechner\n- Hausverwaltung: Verwaltungsobjekte mit Wohneinheiten\n- DSGVO-konformes Cookie-Consent (Google Consent Mode v2)\n- Responsive Design mit TailwindCSS und shadcn/ui\n- OpenStreetMap Integration mit Leaflet\n- JSON-Dummy-Daten mit Supabase-ready Service-Layer\n- Docker/CapRover Deployment-Konfiguration\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git config:*)"
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git remote:*)"
     ],
     "deny": [],
     "ask": []
