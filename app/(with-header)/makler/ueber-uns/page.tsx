@@ -12,16 +12,16 @@ export const metadata: Metadata = {
 
 const teamMembers = [
   {
-    name: 'Thomas Möller',
+    name: 'Aaron Möller',
     position: 'Geschäftsführer & Immobilienmakler',
     beschreibung:
-      'Mit über 15 Jahren Erfahrung in der Immobilienbranche unterstützt Thomas Möller Sie kompetent bei allen Fragen rund um Kauf und Verkauf.',
+      'Mit 6 Jahren Erfahrung in der Immobilienbranche unterstützt Aaron Möller Sie kompetent bei allen Fragen rund um Kauf und Verkauf.',
   },
   {
-    name: 'Sandra Knabe',
-    position: 'Immobilienmaklerin',
+    name: 'Oscar Knabe',
+    position: 'Immobilienmakler',
     beschreibung:
-      'Sandra Knabe ist spezialisiert auf Wohnimmobilien und begleitet Sie mit viel Engagement von der ersten Besichtigung bis zur Schlüsselübergabe.',
+      'Oscar Knabe ist spezialisiert auf Wohnimmobilien und begleitet Sie mit viel Engagement von der ersten Besichtigung bis zur Schlüsselübergabe.',
   },
 ]
 
