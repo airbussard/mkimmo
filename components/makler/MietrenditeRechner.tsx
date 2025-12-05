@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import {
   Calculator,
   Info,
@@ -15,6 +15,8 @@ import {
   Calendar,
   Home,
   FileText,
+  Download,
+  BarChart3,
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -28,6 +30,21 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  Bar,
+} from 'recharts'
+import {
   berechneMietrendite,
   berechneTilgungsplan,
   berechneCashflowPlan,
@@ -36,6 +53,17 @@ import {
   DEFAULT_MIETRENDITE_EINGABEN,
   type MietrenditeEingaben,
 } from '@/lib/utils/mietrendite'
+import { exportRechnerToPDF, formatWaehrungFuerPDF, formatProzentFuerPDF } from '@/lib/utils/pdf-export'
+
+// Chart Farben
+const CHART_COLORS = {
+  primary: '#1e3a5f',
+  secondary: '#2563eb',
+  tertiary: '#3b82f6',
+  quaternary: '#60a5fa',
+  positive: '#22c55e',
+  negative: '#ef4444',
+}
 
 // ==================== HELPER COMPONENTS ====================
 
@@ -143,6 +171,9 @@ export function MietrenditeRechner() {
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
   const [zeigeCashflowPlan, setZeigeCashflowPlan] = useState(false)
 
+  // Refs für Charts
+  const chartRef = useRef<HTMLDivElement>(null)
+
   // Eingaben zusammenstellen - String-Werte zu Number konvertieren
   const eingaben: MietrenditeEingaben = useMemo(
     () => ({
@@ -184,6 +215,72 @@ export function MietrenditeRechner() {
     () => (zeigeCashflowPlan ? berechneCashflowPlan(eingaben, 30) : []),
     [zeigeCashflowPlan, eingaben]
   )
+
+  // Chart-Daten für Cashflow-Verlauf (immer berechnen für PDF)
+  const cashflowChartData = useMemo(() => {
+    const plan = berechneCashflowPlan(eingaben, 30)
+    return plan.map((zeile) => ({
+      jahr: `Jahr ${zeile.jahr}`,
+      cashflow: Math.round(zeile.cashflowNachSteuern),
+      mieteinnahmen: Math.round(zeile.mieteinnahmenNetto),
+      kosten: Math.round(zeile.betriebskosten + zeile.kapitaldienst),
+    }))
+  }, [eingaben])
+
+  // Chart-Daten für Kostenverteilung (Pie)
+  const kostenPieData = useMemo(() => {
+    return [
+      { name: 'Instandhaltung', value: ergebnis.instandhaltungAbsolut },
+      { name: 'Verwaltung', value: ergebnis.verwaltungAbsolut },
+      { name: 'Grundsteuer', value: grundsteuer },
+      { name: 'Leerstand/Ausfall', value: ergebnis.effektiverMietausfall },
+    ].filter((item) => item.value > 0)
+  }, [ergebnis, grundsteuer])
+
+  // Chart-Daten für Einnahmen vs Ausgaben (Bar)
+  const einnahmenAusgabenData = useMemo(() => {
+    return [
+      {
+        name: 'Jährlich',
+        einnahmen: Math.round(ergebnis.jahresMieteinnahmenNetto),
+        ausgaben: Math.round(ergebnis.jaehrlicheKostenGesamt + ergebnis.kapitaldienstJaehrlich),
+      },
+    ]
+  }, [ergebnis])
+
+  // PDF Export Handler
+  const handleExportPDF = async () => {
+    const eingabenPDF = [
+      { label: 'Kaufpreis', wert: formatWaehrungFuerPDF(kaufpreis) },
+      { label: 'Kaufnebenkosten', wert: kaufnebenkostenModus === 'prozent' ? `${kaufnebenkosten} %` : formatWaehrungFuerPDF(parseDecimal(kaufnebenkosten)) },
+      { label: 'Sanierungskosten', wert: formatWaehrungFuerPDF(sanierungskosten) },
+      { label: 'Kaltmiete/Monat', wert: formatWaehrungFuerPDF(kaltmiete) },
+      { label: 'Eigenkapital', wert: formatWaehrungFuerPDF(eigenkapital) },
+      { label: 'Kredithöhe', wert: formatWaehrungFuerPDF(kredithoehe) },
+      { label: 'Zinssatz', wert: `${zinssatz} %` },
+      { label: 'Tilgungssatz', wert: `${tilgungssatz} %` },
+    ]
+
+    const ergebnissePDF = [
+      { label: 'Bruttomietrendite', wert: formatProzentFuerPDF(ergebnis.bruttomietrendite) },
+      { label: 'Nettomietrendite', wert: formatProzentFuerPDF(ergebnis.nettomietrendite), hervorgehoben: true },
+      { label: 'Eigenkapitalrendite', wert: formatProzentFuerPDF(ergebnis.eigenkapitalrendite), hervorgehoben: true },
+      { label: 'Cashflow/Monat', wert: formatWaehrungFuerPDF(ergebnis.cashflowMonatlich), hervorgehoben: true },
+      { label: 'Cashflow/Jahr', wert: formatWaehrungFuerPDF(ergebnis.cashflowNachKapitaldienst) },
+      { label: 'Gesamtinvestition', wert: formatWaehrungFuerPDF(ergebnis.totalInvestment) },
+      { label: 'Kapitaldienst/Jahr', wert: formatWaehrungFuerPDF(ergebnis.kapitaldienstJaehrlich) },
+      { label: 'Restschuld 10 Jahre', wert: formatWaehrungFuerPDF(ergebnis.restschuld10Jahre) },
+      { label: 'Restschuld 20 Jahre', wert: formatWaehrungFuerPDF(ergebnis.restschuld20Jahre) },
+    ]
+
+    await exportRechnerToPDF({
+      titel: 'Mietrendite-Rechner',
+      untertitel: 'Rendite, Cashflow und Profitabilität',
+      eingaben: eingabenPDF,
+      ergebnisse: ergebnissePDF,
+      chartElement: chartRef.current,
+    })
+  }
 
   // Input Handler für Ganzzahlen (z.B. Kaufpreis, Eigenkapital)
   const handleNumericInput = (
@@ -809,6 +906,157 @@ export function MietrenditeRechner() {
             </div>
           </CardContent>
         )}
+      </Card>
+
+      {/* Charts & PDF Export */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="flex items-center gap-2">
+                <BarChart3 className="h-5 w-5 text-primary-600" />
+                Grafische Auswertung
+              </CardTitle>
+              <CardDescription>Visualisierung der Rendite und Cashflow-Entwicklung</CardDescription>
+            </div>
+            <Button onClick={handleExportPDF} variant="outline">
+              <Download className="h-4 w-4 mr-2" />
+              Als PDF speichern
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div ref={chartRef} className="space-y-8">
+            {/* Cashflow-Verlauf über 30 Jahre */}
+            <div>
+              <h4 className="font-medium text-secondary-900 mb-4">Cashflow-Entwicklung (30 Jahre)</h4>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={cashflowChartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                    <XAxis
+                      dataKey="jahr"
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(value) => value.replace('Jahr ', '')}
+                    />
+                    <YAxis
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+                    />
+                    <Tooltip
+                      formatter={(value: number, name: string) => [
+                        new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value),
+                        name === 'cashflow' ? 'Cashflow' : name === 'mieteinnahmen' ? 'Mieteinnahmen' : 'Kosten',
+                      ]}
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                      }}
+                    />
+                    <Legend
+                      formatter={(value) =>
+                        value === 'cashflow' ? 'Cashflow' : value === 'mieteinnahmen' ? 'Mieteinnahmen' : 'Kosten'
+                      }
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="mieteinnahmen"
+                      stackId="1"
+                      stroke={CHART_COLORS.positive}
+                      fill={CHART_COLORS.positive}
+                      fillOpacity={0.3}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="cashflow"
+                      stroke={CHART_COLORS.primary}
+                      fill={CHART_COLORS.primary}
+                      fillOpacity={0.6}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Kostenverteilung & Einnahmen/Ausgaben */}
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Kostenverteilung Pie Chart */}
+              <div>
+                <h4 className="font-medium text-secondary-900 mb-4">Jährliche Kostenverteilung</h4>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={kostenPieData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(0)}%`}
+                        labelLine={true}
+                      >
+                        {kostenPieData.map((_, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={[CHART_COLORS.primary, CHART_COLORS.secondary, CHART_COLORS.tertiary, CHART_COLORS.quaternary][index % 4]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value: number) =>
+                          new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value)
+                        }
+                        contentStyle={{
+                          backgroundColor: 'white',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Einnahmen vs Ausgaben Bar Chart */}
+              <div>
+                <h4 className="font-medium text-secondary-900 mb-4">Einnahmen vs. Ausgaben (jährlich)</h4>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={einnahmenAusgabenData} layout="vertical" margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                      <XAxis
+                        type="number"
+                        tick={{ fontSize: 10 }}
+                        tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
+                      />
+                      <YAxis type="category" dataKey="name" hide />
+                      <Tooltip
+                        formatter={(value: number, name: string) => [
+                          new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(value),
+                          name === 'einnahmen' ? 'Einnahmen' : 'Ausgaben',
+                        ]}
+                        contentStyle={{
+                          backgroundColor: 'white',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        }}
+                      />
+                      <Legend formatter={(value) => (value === 'einnahmen' ? 'Einnahmen' : 'Ausgaben')} />
+                      <Bar dataKey="einnahmen" fill={CHART_COLORS.positive} radius={[0, 4, 4, 0]} />
+                      <Bar dataKey="ausgaben" fill={CHART_COLORS.negative} radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Hinweis */}

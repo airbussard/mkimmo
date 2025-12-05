@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react'
-import { Calculator, Info, ChevronDown, ChevronUp, TrendingDown, Percent, Euro, Calendar, BarChart3 } from 'lucide-react'
+import { useState, useMemo, useRef } from 'react'
+import { Calculator, Info, ChevronDown, ChevronUp, TrendingDown, Percent, Euro, Calendar, BarChart3, Download } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   AreaChart,
@@ -12,11 +12,13 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
 import {
   Select,
   SelectContent,
@@ -36,6 +38,13 @@ import {
   type AnnuitaetErgebnis,
   type JahresZusammenfassung,
 } from '@/lib/utils/annuitaet'
+import { exportRechnerToPDF, formatWaehrungFuerPDF, formatProzentFuerPDF } from '@/lib/utils/pdf-export'
+
+// Chart Farben
+const CHART_COLORS = {
+  zinsen: '#ef4444',
+  tilgung: '#1e3a5f',
+}
 
 // ==================== INFO-TOOLTIP COMPONENT ====================
 
@@ -95,6 +104,9 @@ export function AnnuitaetenRechner() {
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
   const [ansichtModus, setAnsichtModus] = useState<'monatlich' | 'jaehrlich'>('jaehrlich')
 
+  // Refs für Charts
+  const chartRef = useRef<HTMLDivElement>(null)
+
   // Berechnungen - String-Werte zu Number konvertieren
   const eingaben: AnnuitaetEingaben = useMemo(() => ({
     darlehenssumme,
@@ -129,7 +141,7 @@ export function AnnuitaetenRechner() {
     return berechneJahresZusammenfassung(tilgungsplan)
   }, [tilgungsplan])
 
-  // Daten für den Chart
+  // Daten für den Area-Chart
   const chartData = useMemo(() => {
     if (jahresZusammenfassung.length === 0) return []
     return jahresZusammenfassung.slice(0, 40).map((zeile) => ({
@@ -139,6 +151,63 @@ export function AnnuitaetenRechner() {
       restschuld: Math.round(zeile.restschuldEnde),
     }))
   }, [jahresZusammenfassung])
+
+  // Daten für den Pie-Chart (Ratenaufteilung)
+  const pieChartData = useMemo(() => {
+    if (!ergebnis) return []
+    return [
+      { name: 'Zinsanteil', value: ergebnis.anfaenglicheZinsrate, color: CHART_COLORS.zinsen },
+      { name: 'Tilgungsanteil', value: ergebnis.anfaenglicheTilgungsrate, color: CHART_COLORS.tilgung },
+    ]
+  }, [ergebnis])
+
+  // PDF-Export Handler
+  const handleExportPDF = async () => {
+    if (!ergebnis) return
+
+    const eingabenPDF = [
+      { label: 'Darlehenssumme', wert: formatWaehrungFuerPDF(darlehenssumme) },
+      { label: 'Sollzins', wert: formatProzentFuerPDF(parseDecimal(sollzins)) },
+      { label: 'Tilgungssatz', wert: formatProzentFuerPDF(parseDecimal(tilgungssatz)) },
+      { label: 'Zinsbindung', wert: `${zinsbindungJahre} Jahre` },
+    ]
+
+    if (sondertilgung > 0) {
+      eingabenPDF.push({ label: 'Jährliche Sondertilgung', wert: formatWaehrungFuerPDF(sondertilgung) })
+    }
+
+    const ergebnissePDF = [
+      { label: 'Monatliche Rate', wert: formatWaehrungFuerPDF(ergebnis.monatlicheRate), hervorgehoben: true },
+      { label: 'davon Zinsanteil', wert: formatWaehrungFuerPDF(ergebnis.anfaenglicheZinsrate) },
+      { label: 'davon Tilgungsanteil', wert: formatWaehrungFuerPDF(ergebnis.anfaenglicheTilgungsrate) },
+      { label: 'Gesamtbelastung', wert: formatWaehrungFuerPDF(ergebnis.gesamtbelastung) },
+      { label: 'Summe Zinsen', wert: formatWaehrungFuerPDF(ergebnis.summeZinsen) },
+      { label: 'Geschätzte Laufzeit', wert: formatLaufzeit(ergebnis.geschaetzteLaufzeitJahre, ergebnis.geschaetzteLaufzeitMonate) },
+      { label: `Restschuld nach ${zinsbindungJahre} Jahren`, wert: formatWaehrungFuerPDF(ergebnis.restschuldNachZinsbindung), hervorgehoben: true },
+    ]
+
+    // Tilgungsplan-Tabelle (erste 15 Jahre)
+    const tabellenHeaders = ['Jahr', 'Zinsen', 'Tilgung', 'Restschuld']
+    const tabellenRows = jahresZusammenfassung.slice(0, 15).map((zeile) => [
+      String(zeile.jahr),
+      formatWaehrungFuerPDF(zeile.zinsenGesamt),
+      formatWaehrungFuerPDF(zeile.tilgungGesamt),
+      formatWaehrungFuerPDF(zeile.restschuldEnde),
+    ])
+
+    await exportRechnerToPDF({
+      titel: 'Darlehensrechner',
+      untertitel: 'Annuitätendarlehen - Tilgungsplan',
+      eingaben: eingabenPDF,
+      ergebnisse: ergebnissePDF,
+      chartElement: chartRef.current,
+      tabelle: {
+        titel: 'Tilgungsplan (Jahresübersicht)',
+        headers: tabellenHeaders,
+        rows: tabellenRows,
+      },
+    })
+  }
 
   // Handler für Ganzzahlen (z.B. Darlehenssumme, Sondertilgung)
   const handleNumericInput = (
@@ -406,74 +475,128 @@ export function AnnuitaetenRechner() {
       {ergebnis && chartData.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-primary-600" />
-              Tilgungsverlauf
-            </CardTitle>
-            <CardDescription>
-              Entwicklung von Zins- und Tilgungsanteil über die Laufzeit
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-primary-600" />
+                  Grafische Auswertung
+                </CardTitle>
+                <CardDescription>
+                  Tilgungsverlauf und Ratenaufteilung
+                </CardDescription>
+              </div>
+              <Button onClick={handleExportPDF} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Als PDF speichern
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="h-80 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={chartData}
-                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis
-                    dataKey="jahr"
-                    tick={{ fontSize: 12 }}
-                    tickLine={{ stroke: '#9ca3af' }}
-                    interval={Math.ceil(chartData.length / 8)}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 12 }}
-                    tickLine={{ stroke: '#9ca3af' }}
-                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
-                  />
-                  <Tooltip
-                    formatter={(value: number, name: string) => [
-                      formatWaehrung(value),
-                      name === 'zinsen' ? 'Zinsen' : name === 'tilgung' ? 'Tilgung' : 'Restschuld'
-                    ]}
-                    labelStyle={{ fontWeight: 'bold' }}
-                    contentStyle={{
-                      backgroundColor: 'white',
-                      border: '1px solid #e5e7eb',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                    }}
-                  />
-                  <Legend
-                    formatter={(value) =>
-                      value === 'zinsen' ? 'Zinsen' : value === 'tilgung' ? 'Tilgung' : 'Restschuld'
-                    }
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="zinsen"
-                    stackId="1"
-                    stroke="#ef4444"
-                    fill="#fca5a5"
-                    name="zinsen"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="tilgung"
-                    stackId="1"
-                    stroke="#0f1a2e"
-                    fill="#1e3a5f"
-                    name="tilgung"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
+            <div ref={chartRef} className="space-y-8">
+              {/* Pie-Chart: Ratenaufteilung */}
+              <div>
+                <h4 className="font-semibold text-secondary-900 mb-4">Anfängliche Ratenaufteilung</h4>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={pieChartData}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={50}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="value"
+                        label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(1)}%`}
+                        labelLine={true}
+                      >
+                        {pieChartData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.color} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        formatter={(value: number) => formatWaehrung(value)}
+                        contentStyle={{
+                          backgroundColor: 'white',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                        }}
+                      />
+                      <Legend
+                        verticalAlign="bottom"
+                        height={36}
+                        formatter={(value) => <span className="text-sm">{value}</span>}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              {/* Area-Chart: Tilgungsverlauf */}
+              <div>
+                <h4 className="font-semibold text-secondary-900 mb-4">Tilgungsverlauf über die Laufzeit</h4>
+                <div className="h-80 w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={chartData}
+                      margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                      <XAxis
+                        dataKey="jahr"
+                        tick={{ fontSize: 12 }}
+                        tickLine={{ stroke: '#9ca3af' }}
+                        interval={Math.ceil(chartData.length / 8)}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 12 }}
+                        tickLine={{ stroke: '#9ca3af' }}
+                        tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
+                      />
+                      <Tooltip
+                        formatter={(value: number, name: string) => [
+                          formatWaehrung(value),
+                          name === 'zinsen' ? 'Zinsen' : name === 'tilgung' ? 'Tilgung' : 'Restschuld'
+                        ]}
+                        labelStyle={{ fontWeight: 'bold' }}
+                        contentStyle={{
+                          backgroundColor: 'white',
+                          border: '1px solid #e5e7eb',
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                        }}
+                      />
+                      <Legend
+                        formatter={(value) =>
+                          value === 'zinsen' ? 'Zinsen' : value === 'tilgung' ? 'Tilgung' : 'Restschuld'
+                        }
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="zinsen"
+                        stackId="1"
+                        stroke="#ef4444"
+                        fill="#fca5a5"
+                        name="zinsen"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="tilgung"
+                        stackId="1"
+                        stroke="#0f1a2e"
+                        fill="#1e3a5f"
+                        name="tilgung"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-xs text-secondary-500 mt-4 text-center">
+                  Der Chart zeigt, wie sich der Anteil der Zinsen (rot) im Laufe der Zeit verringert,
+                  während der Tilgungsanteil (blau) steigt. Die Summe beider ergibt Ihre jährliche Zahlung.
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-secondary-500 mt-4 text-center">
-              Der Chart zeigt, wie sich der Anteil der Zinsen (rot) im Laufe der Zeit verringert,
-              während der Tilgungsanteil (blau) steigt. Die Summe beider ergibt Ihre jährliche Zahlung.
-            </p>
           </CardContent>
         </Card>
       )}

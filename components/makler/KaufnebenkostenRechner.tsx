@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Calculator, Info } from 'lucide-react'
+import { Calculator, Info, Download } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
 import {
   Select,
   SelectContent,
@@ -14,10 +15,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Legend,
+  Tooltip,
+} from 'recharts'
 import { Bundesland, BUNDESLAND_NAMEN } from '@/types/property'
 import { berechneKaufnebenkosten, formatProzent } from '@/lib/utils/calc'
 import { GRUNDERWERBSTEUER } from '@/config/tax-rates'
 import { formatCurrency } from '@/lib/utils'
+import { exportRechnerToPDF, formatWaehrungFuerPDF, formatProzentFuerPDF, type PDFErgebnis } from '@/lib/utils/pdf-export'
+
+// Chart Farben
+const CHART_COLORS = ['#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa']
 
 export function KaufnebenkostenRechner() {
   const searchParams = useSearchParams()
@@ -29,6 +42,7 @@ export function KaufnebenkostenRechner() {
     (initialBundesland as Bundesland) || 'nordrhein-westfalen'
   )
   const [mitMakler, setMitMakler] = useState(true)
+  const chartRef = useRef<HTMLDivElement>(null)
 
   const ergebnis = useMemo(() => {
     if (kaufpreis <= 0) return null
@@ -39,9 +53,57 @@ export function KaufnebenkostenRechner() {
     })
   }, [kaufpreis, bundesland, mitMakler])
 
+  // Chart-Daten für Donut-Chart
+  const chartData = useMemo(() => {
+    if (!ergebnis) return []
+    const data = [
+      { name: 'Grunderwerbsteuer', value: ergebnis.grunderwerbsteuer },
+      { name: 'Notarkosten', value: ergebnis.notarkosten },
+      { name: 'Grundbuchkosten', value: ergebnis.grundbuchkosten },
+    ]
+    if (mitMakler && ergebnis.maklerprovision > 0) {
+      data.push({ name: 'Maklerprovision', value: ergebnis.maklerprovision })
+    }
+    return data
+  }, [ergebnis, mitMakler])
+
   const handleKaufpreisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '')
     setKaufpreis(value ? parseInt(value) : 0)
+  }
+
+  // PDF-Export Handler
+  const handleExportPDF = async () => {
+    if (!ergebnis) return
+
+    const eingaben = [
+      { label: 'Kaufpreis', wert: formatWaehrungFuerPDF(kaufpreis) },
+      { label: 'Bundesland', wert: BUNDESLAND_NAMEN[bundesland] },
+      { label: 'Maklerprovision', wert: mitMakler ? 'Ja (3,57%)' : 'Nein' },
+    ]
+
+    const ergebnisse: PDFErgebnis[] = [
+      { label: 'Grunderwerbsteuer', wert: `${formatWaehrungFuerPDF(ergebnis.grunderwerbsteuer)} (${formatProzentFuerPDF(ergebnis.grunderwerbsteuerProzent)})` },
+      { label: 'Notarkosten', wert: `${formatWaehrungFuerPDF(ergebnis.notarkosten)} (${formatProzentFuerPDF(ergebnis.notarkostenProzent)})` },
+      { label: 'Grundbuchkosten', wert: `${formatWaehrungFuerPDF(ergebnis.grundbuchkosten)} (${formatProzentFuerPDF(ergebnis.grundbuchkostenProzent)})` },
+    ]
+
+    if (mitMakler) {
+      ergebnisse.push({ label: 'Maklerprovision', wert: `${formatWaehrungFuerPDF(ergebnis.maklerprovision)} (${formatProzentFuerPDF(ergebnis.maklerprovisionProzent)})` })
+    }
+
+    ergebnisse.push(
+      { label: 'Nebenkosten gesamt', wert: `${formatWaehrungFuerPDF(ergebnis.nebenkosten)} (${formatProzentFuerPDF(ergebnis.nebenkostenProzent)})`, hervorgehoben: true },
+      { label: 'Gesamtkosten', wert: formatWaehrungFuerPDF(ergebnis.gesamtKaufpreis), hervorgehoben: true }
+    )
+
+    await exportRechnerToPDF({
+      titel: 'Kaufnebenkosten-Rechner',
+      untertitel: 'Übersicht aller Kaufnebenkosten',
+      eingaben,
+      ergebnisse,
+      chartElement: chartRef.current,
+    })
   }
 
   return (
@@ -190,6 +252,61 @@ export function KaufnebenkostenRechner() {
           )}
         </CardContent>
       </Card>
+
+      {/* Chart + PDF Export */}
+      {ergebnis && chartData.length > 0 && (
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>Kostenverteilung</CardTitle>
+                <CardDescription>Grafische Darstellung der Kaufnebenkosten</CardDescription>
+              </div>
+              <Button onClick={handleExportPDF} variant="outline">
+                <Download className="h-4 w-4 mr-2" />
+                Als PDF speichern
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div ref={chartRef} className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={chartData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(1)}%`}
+                    labelLine={true}
+                  >
+                    {chartData.map((_, index) => (
+                      <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number) => formatCurrency(value)}
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                    }}
+                  />
+                  <Legend
+                    verticalAlign="bottom"
+                    height={36}
+                    formatter={(value) => <span className="text-sm">{value}</span>}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Hinweis */}
       <div className="lg:col-span-2">
