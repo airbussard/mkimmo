@@ -45,7 +45,19 @@ export const MAKLER_NAVIGATION: NavItem[] = [
   },
   {
     titel: 'Rechner',
-    href: '/makler/kaufnebenkosten-rechner',
+    href: '#',
+    children: [
+      {
+        titel: 'Kaufnebenkosten-Rechner',
+        href: '/makler/kaufnebenkosten-rechner',
+        beschreibung: 'Berechnen Sie alle Nebenkosten beim Immobilienkauf',
+      },
+      {
+        titel: 'Darlehensrechner',
+        href: '/makler/darlehensrechner',
+        beschreibung: 'Planen Sie Ihre Finanzierung mit unserem Annuitätenrechner',
+      },
+    ],
   },
   {
     titel: 'Blog',
