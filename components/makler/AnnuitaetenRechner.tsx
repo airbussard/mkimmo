@@ -75,11 +75,17 @@ function ErgebnisZeile({ label, wert, hervorgehoben = false, icon }: ErgebnisZei
 
 // ==================== MAIN COMPONENT ====================
 
+// Hilfsfunktion: String → Number (mit Komma als Dezimaltrennzeichen)
+const parseDecimal = (value: string): number => {
+  const num = parseFloat(value.replace(',', '.'))
+  return isNaN(num) ? 0 : num
+}
+
 export function AnnuitaetenRechner() {
-  // State für Eingabefelder
+  // State für Eingabefelder - Dezimalzahlen als String für korrekte Komma-Eingabe
   const [darlehenssumme, setDarlehenssumme] = useState(DEFAULT_EINGABEN.darlehenssumme)
-  const [sollzins, setSollzins] = useState(DEFAULT_EINGABEN.sollzins)
-  const [tilgungssatz, setTilgungssatz] = useState(DEFAULT_EINGABEN.tilgungssatz)
+  const [sollzins, setSollzins] = useState(String(DEFAULT_EINGABEN.sollzins).replace('.', ','))
+  const [tilgungssatz, setTilgungssatz] = useState(String(DEFAULT_EINGABEN.tilgungssatz).replace('.', ','))
   const [sondertilgung, setSondertilgung] = useState(DEFAULT_EINGABEN.sondertilgung)
   const [zinsbindungJahre, setZinsbindungJahre] = useState(DEFAULT_EINGABEN.zinsbindungJahre)
   const [berechnungsModus, setBerechnungsModus] = useState<'tilgung' | 'wunschrate'>('tilgung')
@@ -89,11 +95,11 @@ export function AnnuitaetenRechner() {
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
   const [ansichtModus, setAnsichtModus] = useState<'monatlich' | 'jaehrlich'>('jaehrlich')
 
-  // Berechnungen
+  // Berechnungen - String-Werte zu Number konvertieren
   const eingaben: AnnuitaetEingaben = useMemo(() => ({
     darlehenssumme,
-    sollzins,
-    tilgungssatz,
+    sollzins: parseDecimal(sollzins),
+    tilgungssatz: parseDecimal(tilgungssatz),
     sondertilgung,
     zinsbindungJahre,
     berechnungsModus,
@@ -134,23 +140,36 @@ export function AnnuitaetenRechner() {
     }))
   }, [jahresZusammenfassung])
 
-  // Handler für numerische Eingaben
+  // Handler für Ganzzahlen (z.B. Darlehenssumme, Sondertilgung)
   const handleNumericInput = (
     value: string,
-    setter: (val: number) => void,
-    allowDecimal: boolean = false
+    setter: (val: number) => void
   ) => {
-    // Entferne alle Zeichen außer Ziffern, Punkt und Komma
+    // Entferne alle Zeichen außer Ziffern
     let cleanValue = value.replace(/[^\d.,]/g, '')
-    // Entferne Tausender-Punkte (deutsche Formatierung), dann Komma zu Punkt für Dezimalzahlen
+    // Entferne Tausender-Punkte (deutsche Formatierung)
     cleanValue = cleanValue.replace(/\./g, '').replace(',', '.')
-
-    const numValue = allowDecimal ? parseFloat(cleanValue) : parseInt(cleanValue, 10)
+    const numValue = parseInt(cleanValue, 10)
     if (!isNaN(numValue)) {
       setter(numValue)
-    } else if (cleanValue === '' || cleanValue === '.') {
+    } else if (cleanValue === '') {
       setter(0)
     }
+  }
+
+  // Handler für Dezimalzahlen (z.B. Zinssatz, Tilgungssatz)
+  const handleDecimalInput = (
+    value: string,
+    setter: (val: string) => void
+  ) => {
+    // Nur Ziffern und ein Komma erlauben
+    let cleanValue = value.replace(/[^\d,]/g, '')
+    // Maximal ein Komma
+    const parts = cleanValue.split(',')
+    if (parts.length > 2) {
+      cleanValue = parts[0] + ',' + parts.slice(1).join('')
+    }
+    setter(cleanValue)
   }
 
   return (
@@ -214,7 +233,7 @@ export function AnnuitaetenRechner() {
                   type="text"
                   inputMode="decimal"
                   value={sollzins}
-                  onChange={(e) => handleNumericInput(e.target.value, setSollzins, true)}
+                  onChange={(e) => handleDecimalInput(e.target.value, setSollzins)}
                   className="pr-10"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -234,7 +253,7 @@ export function AnnuitaetenRechner() {
                     type="text"
                     inputMode="decimal"
                     value={tilgungssatz}
-                    onChange={(e) => handleNumericInput(e.target.value, setTilgungssatz, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setTilgungssatz)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>

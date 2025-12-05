@@ -103,61 +103,67 @@ function ResultCard({ titel, wert, beschreibung, icon, highlight, positiv, negat
 
 // ==================== MAIN COMPONENT ====================
 
+// Hilfsfunktion: String → Number (mit Komma als Dezimaltrennzeichen)
+const parseDecimal = (value: string): number => {
+  const num = parseFloat(value.replace(',', '.'))
+  return isNaN(num) ? 0 : num
+}
+
 export function MietrenditeRechner() {
-  // State für alle Eingaben
+  // State für alle Eingaben - Ganzzahlen als number, Dezimalzahlen als string
   const [kaufpreis, setKaufpreis] = useState(DEFAULT_MIETRENDITE_EINGABEN.kaufpreis)
-  const [kaufnebenkosten, setKaufnebenkosten] = useState(DEFAULT_MIETRENDITE_EINGABEN.kaufnebenkosten)
+  const [kaufnebenkosten, setKaufnebenkosten] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.kaufnebenkosten).replace('.', ','))
   const [kaufnebenkostenModus, setKaufnebenkostenModus] = useState<'prozent' | 'absolut'>(
     DEFAULT_MIETRENDITE_EINGABEN.kaufnebenkostenModus
   )
   const [sanierungskosten, setSanierungskosten] = useState(DEFAULT_MIETRENDITE_EINGABEN.sanierungskosten)
-  const [instandhaltung, setInstandhaltung] = useState(DEFAULT_MIETRENDITE_EINGABEN.instandhaltungskostenJaehrlich)
+  const [instandhaltung, setInstandhaltung] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.instandhaltungskostenJaehrlich).replace('.', ','))
   const [instandhaltungModus, setInstandhaltungModus] = useState<'prozent' | 'absolut'>(
     DEFAULT_MIETRENDITE_EINGABEN.instandhaltungModus
   )
 
   const [kaltmiete, setKaltmiete] = useState(DEFAULT_MIETRENDITE_EINGABEN.kaltmieteMonat)
-  const [leerstandsquote, setLeerstandsquote] = useState(DEFAULT_MIETRENDITE_EINGABEN.leerstandsquote)
-  const [mietausfallwagnis, setMietausfallwagnis] = useState(DEFAULT_MIETRENDITE_EINGABEN.mietausfallwagnis)
-  const [verwaltungskosten, setVerwaltungskosten] = useState(DEFAULT_MIETRENDITE_EINGABEN.verwaltungskosten)
+  const [leerstandsquote, setLeerstandsquote] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.leerstandsquote).replace('.', ','))
+  const [mietausfallwagnis, setMietausfallwagnis] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.mietausfallwagnis).replace('.', ','))
+  const [verwaltungskosten, setVerwaltungskosten] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.verwaltungskosten).replace('.', ','))
   const [verwaltungskostenModus, setVerwaltungskostenModus] = useState<'prozent' | 'absolut'>(
     DEFAULT_MIETRENDITE_EINGABEN.verwaltungskostenModus
   )
 
   const [eigenkapital, setEigenkapital] = useState(DEFAULT_MIETRENDITE_EINGABEN.eigenkapital)
   const [kredithoehe, setKredithoehe] = useState(DEFAULT_MIETRENDITE_EINGABEN.kredithoehe)
-  const [zinssatz, setZinssatz] = useState(DEFAULT_MIETRENDITE_EINGABEN.zinssatz)
-  const [tilgungssatz, setTilgungssatz] = useState(DEFAULT_MIETRENDITE_EINGABEN.tilgungssatz)
+  const [zinssatz, setZinssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.zinssatz).replace('.', ','))
+  const [tilgungssatz, setTilgungssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.tilgungssatz).replace('.', ','))
 
   const [grundsteuer, setGrundsteuer] = useState(DEFAULT_MIETRENDITE_EINGABEN.grundsteuerJaehrlich)
-  const [afaSatz, setAfaSatz] = useState(DEFAULT_MIETRENDITE_EINGABEN.afaSatz)
-  const [steuersatz, setSteuersatz] = useState(DEFAULT_MIETRENDITE_EINGABEN.persoenlichSteuersatz)
+  const [afaSatz, setAfaSatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.afaSatz).replace('.', ','))
+  const [steuersatz, setSteuersatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.persoenlichSteuersatz).replace('.', ','))
 
   // UI State
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
   const [zeigeCashflowPlan, setZeigeCashflowPlan] = useState(false)
 
-  // Eingaben zusammenstellen
+  // Eingaben zusammenstellen - String-Werte zu Number konvertieren
   const eingaben: MietrenditeEingaben = useMemo(
     () => ({
       kaufpreis,
-      kaufnebenkosten,
+      kaufnebenkosten: parseDecimal(kaufnebenkosten),
       kaufnebenkostenModus,
       sanierungskosten,
-      instandhaltungskostenJaehrlich: instandhaltung,
+      instandhaltungskostenJaehrlich: parseDecimal(instandhaltung),
       instandhaltungModus,
       kaltmieteMonat: kaltmiete,
-      leerstandsquote,
-      mietausfallwagnis,
-      verwaltungskosten,
+      leerstandsquote: parseDecimal(leerstandsquote),
+      mietausfallwagnis: parseDecimal(mietausfallwagnis),
+      verwaltungskosten: parseDecimal(verwaltungskosten),
       verwaltungskostenModus,
       eigenkapital,
       kredithoehe,
-      zinssatz,
-      tilgungssatz,
+      zinssatz: parseDecimal(zinssatz),
+      tilgungssatz: parseDecimal(tilgungssatz),
       grundsteuerJaehrlich: grundsteuer,
-      afaSatz,
-      persoenlichSteuersatz: steuersatz,
+      afaSatz: parseDecimal(afaSatz),
+      persoenlichSteuersatz: parseDecimal(steuersatz),
     }),
     [
       kaufpreis, kaufnebenkosten, kaufnebenkostenModus, sanierungskosten,
@@ -171,7 +177,7 @@ export function MietrenditeRechner() {
   // Berechnungen
   const ergebnis = useMemo(() => berechneMietrendite(eingaben), [eingaben])
   const tilgungsplan = useMemo(
-    () => (zeigeTilgungsplan ? berechneTilgungsplan(kredithoehe, zinssatz, tilgungssatz, 30) : []),
+    () => (zeigeTilgungsplan ? berechneTilgungsplan(kredithoehe, parseDecimal(zinssatz), parseDecimal(tilgungssatz), 30) : []),
     [zeigeTilgungsplan, kredithoehe, zinssatz, tilgungssatz]
   )
   const cashflowPlan = useMemo(
@@ -179,20 +185,36 @@ export function MietrenditeRechner() {
     [zeigeCashflowPlan, eingaben]
   )
 
-  // Input Handler
+  // Input Handler für Ganzzahlen (z.B. Kaufpreis, Eigenkapital)
   const handleNumericInput = (
     value: string,
-    setter: (val: number) => void,
-    allowDecimal: boolean = false
+    setter: (val: number) => void
   ) => {
+    // Entferne alle Zeichen außer Ziffern
     let cleanValue = value.replace(/[^\d.,]/g, '')
+    // Entferne Tausender-Punkte (deutsche Formatierung)
     cleanValue = cleanValue.replace(/\./g, '').replace(',', '.')
-    const numValue = allowDecimal ? parseFloat(cleanValue) : parseInt(cleanValue, 10)
+    const numValue = parseInt(cleanValue, 10)
     if (!isNaN(numValue)) {
       setter(numValue)
-    } else if (cleanValue === '' || cleanValue === '.') {
+    } else if (cleanValue === '') {
       setter(0)
     }
+  }
+
+  // Input Handler für Dezimalzahlen (z.B. Zinssatz, Prozente)
+  const handleDecimalInput = (
+    value: string,
+    setter: (val: string) => void
+  ) => {
+    // Nur Ziffern und ein Komma erlauben
+    let cleanValue = value.replace(/[^\d,]/g, '')
+    // Maximal ein Komma
+    const parts = cleanValue.split(',')
+    if (parts.length > 2) {
+      cleanValue = parts[0] + ',' + parts.slice(1).join('')
+    }
+    setter(cleanValue)
   }
 
   return (
@@ -237,7 +259,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={kaufnebenkosten}
-                    onChange={(e) => handleNumericInput(e.target.value, setKaufnebenkosten, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setKaufnebenkosten)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">
@@ -285,7 +307,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={instandhaltung}
-                    onChange={(e) => handleNumericInput(e.target.value, setInstandhaltung, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setInstandhaltung)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">
@@ -343,7 +365,7 @@ export function MietrenditeRechner() {
                   type="text"
                   inputMode="decimal"
                   value={leerstandsquote}
-                  onChange={(e) => handleNumericInput(e.target.value, setLeerstandsquote, true)}
+                  onChange={(e) => handleDecimalInput(e.target.value, setLeerstandsquote)}
                   className="pr-10"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -360,7 +382,7 @@ export function MietrenditeRechner() {
                   type="text"
                   inputMode="decimal"
                   value={mietausfallwagnis}
-                  onChange={(e) => handleNumericInput(e.target.value, setMietausfallwagnis, true)}
+                  onChange={(e) => handleDecimalInput(e.target.value, setMietausfallwagnis)}
                   className="pr-10"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -378,7 +400,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={verwaltungskosten}
-                    onChange={(e) => handleNumericInput(e.target.value, setVerwaltungskosten, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setVerwaltungskosten)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">
@@ -454,7 +476,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={zinssatz}
-                    onChange={(e) => handleNumericInput(e.target.value, setZinssatz, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setZinssatz)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -471,7 +493,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={tilgungssatz}
-                    onChange={(e) => handleNumericInput(e.target.value, setTilgungssatz, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setTilgungssatz)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -520,7 +542,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={afaSatz}
-                    onChange={(e) => handleNumericInput(e.target.value, setAfaSatz, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setAfaSatz)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
@@ -537,7 +559,7 @@ export function MietrenditeRechner() {
                     type="text"
                     inputMode="decimal"
                     value={steuersatz}
-                    onChange={(e) => handleNumericInput(e.target.value, setSteuersatz, true)}
+                    onChange={(e) => handleDecimalInput(e.target.value, setSteuersatz)}
                     className="pr-10"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
