@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { FOOTER_NAVIGATION, COMPANY_INFO } from '@/config/navigation'
+import { APP_VERSION } from '@/config/version'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -84,6 +85,9 @@ export function Footer() {
         <div className="border-t border-secondary-700 mt-8 pt-8 text-center text-sm text-secondary-400">
           <p>
             &copy; {currentYear} {COMPANY_INFO.name}. Alle Rechte vorbehalten.
+          </p>
+          <p className="mt-1 text-secondary-500 text-xs">
+            Version {APP_VERSION}
           </p>
         </div>
       </div>
