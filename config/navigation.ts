@@ -57,6 +57,11 @@ export const MAKLER_NAVIGATION: NavItem[] = [
         href: '/makler/darlehensrechner',
         beschreibung: 'Planen Sie Ihre Finanzierung mit unserem Annuitätenrechner',
       },
+      {
+        titel: 'Mietrendite-Rechner',
+        href: '/makler/mietrendite-rechner',
+        beschreibung: 'Berechnen Sie Rendite, Cashflow und Profitabilität',
+      },
     ],
   },
   {
@@ -106,6 +111,7 @@ export const FOOTER_NAVIGATION = {
     { titel: 'Hausverwaltung', href: '/hausverwaltung' },
     { titel: 'Kaufnebenkosten-Rechner', href: '/makler/kaufnebenkosten-rechner' },
     { titel: 'Darlehensrechner', href: '/makler/darlehensrechner' },
+    { titel: 'Mietrendite-Rechner', href: '/makler/mietrendite-rechner' },
   ],
   rechtliches: [
     { titel: 'Impressum', href: '/impressum' },
