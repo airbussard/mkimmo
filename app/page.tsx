@@ -11,9 +11,9 @@ export default function HomePage() {
           <Image
             src="/images/Logo MK Immobilien.png"
             alt={COMPANY_INFO.name}
-            width={600}
-            height={150}
-            className="h-24 md:h-32 w-auto mx-auto mb-6"
+            width={800}
+            height={200}
+            className="h-48 md:h-64 w-auto mx-auto mb-6"
             priority
           />
           <p className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto">
