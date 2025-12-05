@@ -140,7 +140,11 @@ export function AnnuitaetenRechner() {
     setter: (val: number) => void,
     allowDecimal: boolean = false
   ) => {
-    const cleanValue = value.replace(/[^\d.,]/g, '').replace(',', '.')
+    // Entferne alle Zeichen außer Ziffern, Punkt und Komma
+    let cleanValue = value.replace(/[^\d.,]/g, '')
+    // Entferne Tausender-Punkte (deutsche Formatierung), dann Komma zu Punkt für Dezimalzahlen
+    cleanValue = cleanValue.replace(/\./g, '').replace(',', '.')
+
     const numValue = allowDecimal ? parseFloat(cleanValue) : parseInt(cleanValue, 10)
     if (!isNaN(numValue)) {
       setter(numValue)
