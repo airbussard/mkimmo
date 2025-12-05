@@ -13,7 +13,7 @@ export default function HomePage() {
             alt={COMPANY_INFO.name}
             width={800}
             height={200}
-            className="h-48 md:h-64 w-auto mx-auto mb-6"
+            className="h-48 md:h-64 w-auto mx-auto mb-2"
             priority
           />
           <p className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto">
