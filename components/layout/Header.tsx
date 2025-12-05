@@ -68,15 +68,15 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
+        <div className="flex h-24 items-center justify-between">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/images/Logo MK Immobilien.png"
               alt={COMPANY_INFO.name}
-              width={252}
-              height={56}
-              className="h-14 w-auto"
+              width={360}
+              height={80}
+              className="h-20 w-auto"
               priority
             />
           </Link>
