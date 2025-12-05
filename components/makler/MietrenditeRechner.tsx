@@ -159,7 +159,7 @@ export function MietrenditeRechner() {
   )
 
   const [eigenkapital, setEigenkapital] = useState(DEFAULT_MIETRENDITE_EINGABEN.eigenkapital)
-  const [kredithoehe, setKredithoehe] = useState(DEFAULT_MIETRENDITE_EINGABEN.kredithoehe)
+  // kredithoehe wird jetzt automatisch berechnet (siehe unten)
   const [zinssatz, setZinssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.zinssatz).replace('.', ','))
   const [tilgungssatz, setTilgungssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.tilgungssatz).replace('.', ','))
 
@@ -173,6 +173,19 @@ export function MietrenditeRechner() {
 
   // Refs für Charts
   const chartRef = useRef<HTMLDivElement>(null)
+
+  // Gesamtinvestition berechnen (Kaufpreis + Kaufnebenkosten + Sanierung)
+  const gesamtinvestition = useMemo(() => {
+    const kaufnebenkostenAbsolut = kaufnebenkostenModus === 'prozent'
+      ? kaufpreis * (parseDecimal(kaufnebenkosten) / 100)
+      : parseDecimal(kaufnebenkosten)
+    return kaufpreis + kaufnebenkostenAbsolut + sanierungskosten
+  }, [kaufpreis, kaufnebenkosten, kaufnebenkostenModus, sanierungskosten])
+
+  // Kredithöhe automatisch berechnen (Gesamtinvestition - Eigenkapital)
+  const kredithoehe = useMemo(() => {
+    return Math.max(0, gesamtinvestition - eigenkapital)
+  }, [gesamtinvestition, eigenkapital])
 
   // Eingaben zusammenstellen - String-Werte zu Number konvertieren
   const eingaben: MietrenditeEingaben = useMemo(
@@ -528,10 +541,23 @@ export function MietrenditeRechner() {
             <CardDescription>Eigenkapital und Kreditkonditionen</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Gesamtinvestition - Berechneter Wert */}
+            <div className="p-3 bg-primary-50 rounded-lg border border-primary-200">
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-sm font-medium text-primary-700">Gesamtinvestition</span>
+                  <p className="text-xs text-primary-600">Kaufpreis + Nebenkosten + Sanierung</p>
+                </div>
+                <span className="text-lg font-bold text-primary-700">
+                  {gesamtinvestition.toLocaleString('de-DE')} €
+                </span>
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label>
                 Eigenkapital
-                <InfoTooltip text="Ihr eingesetztes Eigenkapital inkl. Kaufnebenkosten." />
+                <InfoTooltip text="Ihr eingesetztes Eigenkapital. Die benötigte Kredithöhe wird automatisch berechnet." />
               </Label>
               <div className="relative">
                 <Input
@@ -545,20 +571,16 @@ export function MietrenditeRechner() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>
-                Kredithöhe
-                <InfoTooltip text="Der aufgenommene Darlehensbetrag." />
-              </Label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={kredithoehe.toLocaleString('de-DE')}
-                  onChange={(e) => handleNumericInput(e.target.value, setKredithoehe)}
-                  className="pr-10"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">€</span>
+            {/* Kredithöhe - Automatisch berechnet */}
+            <div className="p-3 bg-secondary-50 rounded-lg border border-secondary-200">
+              <div className="flex justify-between items-center">
+                <div>
+                  <span className="text-sm font-medium text-secondary-700">Benötigte Kredithöhe</span>
+                  <p className="text-xs text-secondary-500">automatisch berechnet</p>
+                </div>
+                <span className="text-lg font-bold text-secondary-700">
+                  {kredithoehe.toLocaleString('de-DE')} €
+                </span>
               </div>
             </div>
 
