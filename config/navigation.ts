@@ -48,6 +48,10 @@ export const MAKLER_NAVIGATION: NavItem[] = [
     href: '/makler/kaufnebenkosten-rechner',
   },
   {
+    titel: 'Blog',
+    href: '/makler/blog',
+  },
+  {
     titel: 'Kontakt',
     href: '/makler/kontakt',
   },
@@ -66,6 +70,10 @@ export const HAUSVERWALTUNG_NAVIGATION: NavItem[] = [
   {
     titel: 'Anfrage',
     href: '/hausverwaltung/anfrage',
+  },
+  {
+    titel: 'Blog',
+    href: '/hausverwaltung/blog',
   },
   {
     titel: 'Kontakt',

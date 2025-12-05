@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { LandingTile } from '@/components/landing/LandingTile'
 import { COMPANY_INFO } from '@/config/navigation'
 
@@ -7,9 +8,14 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="bg-gradient-to-b from-secondary-50 to-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl md:text-5xl font-bold text-secondary-900 mb-4">
-            Willkommen bei {COMPANY_INFO.name}
-          </h1>
+          <Image
+            src="/images/Logo MK Immobilien.png"
+            alt={COMPANY_INFO.name}
+            width={600}
+            height={150}
+            className="h-24 md:h-32 w-auto mx-auto mb-6"
+            priority
+          />
           <p className="text-lg md:text-xl text-secondary-600 max-w-2xl mx-auto">
             Ihr kompetenter Partner für Immobilien und Hausverwaltung in Eschweiler und Umgebung.
             Wir unterstützen Sie professionell bei allen Fragen rund um Ihre Immobilie.

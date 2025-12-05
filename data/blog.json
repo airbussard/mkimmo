@@ -1,0 +1,38 @@
+[
+  {
+    "id": "blog-001",
+    "titel": "Tipps für den Immobilienkauf: Worauf Sie achten sollten",
+    "slug": "tipps-immobilienkauf",
+    "inhalt": "Der Kauf einer Immobilie ist eine der größten finanziellen Entscheidungen im Leben. Damit Sie gut vorbereitet sind, haben wir die wichtigsten Tipps zusammengestellt.\n\n## 1. Budget realistisch planen\n\nBevor Sie mit der Suche beginnen, sollten Sie Ihr Budget genau kennen. Berücksichtigen Sie dabei nicht nur den Kaufpreis, sondern auch die Kaufnebenkosten (Grunderwerbsteuer, Notar, Makler) sowie eventuelle Renovierungskosten.\n\n## 2. Lage, Lage, Lage\n\nDie Lage ist und bleibt der wichtigste Faktor bei Immobilien. Achten Sie auf die Infrastruktur, Verkehrsanbindung und die Entwicklung des Viertels.\n\n## 3. Professionelle Beratung nutzen\n\nEin erfahrener Makler kann Ihnen viel Arbeit abnehmen und Sie vor teuren Fehlern bewahren. Wir beraten Sie gerne unverbindlich.",
+    "kurzBeschreibung": "Die wichtigsten Tipps für einen erfolgreichen Immobilienkauf – von der Budgetplanung bis zur professionellen Beratung.",
+    "autor": "Aaron Möller",
+    "bild": "/images/blog/immobilienkauf.jpg",
+    "status": "published",
+    "erstelltAm": "2024-11-15T10:00:00Z",
+    "veroeffentlichtAm": "2024-11-15T10:00:00Z"
+  },
+  {
+    "id": "blog-002",
+    "titel": "Nebenkostenabrechnung: Das müssen Mieter wissen",
+    "slug": "nebenkostenabrechnung-mieter",
+    "inhalt": "Die jährliche Nebenkostenabrechnung sorgt bei vielen Mietern für Verwirrung. Wir erklären, worauf Sie achten sollten.\n\n## Fristen beachten\n\nDer Vermieter muss die Nebenkostenabrechnung innerhalb von 12 Monaten nach Ende des Abrechnungszeitraums erstellen. Danach können keine Nachforderungen mehr geltend gemacht werden.\n\n## Umlageschlüssel prüfen\n\nPrüfen Sie, ob der verwendete Umlageschlüssel (Wohnfläche, Personenzahl, etc.) korrekt angewendet wurde.\n\n## Belegeinsicht fordern\n\nSie haben das Recht, die Originalbelege einzusehen. Nutzen Sie diese Möglichkeit bei Unklarheiten.\n\n## Bei Fragen: Fragen Sie uns\n\nAls erfahrene Hausverwaltung stehen wir unseren Mietern bei allen Fragen zur Nebenkostenabrechnung zur Verfügung.",
+    "kurzBeschreibung": "Alles Wichtige zur Nebenkostenabrechnung: Fristen, Umlageschlüssel und Ihre Rechte als Mieter.",
+    "autor": "Oscar Knabe",
+    "bild": "/images/blog/nebenkosten.jpg",
+    "status": "published",
+    "erstelltAm": "2024-10-20T09:00:00Z",
+    "veroeffentlichtAm": "2024-10-20T09:00:00Z"
+  },
+  {
+    "id": "blog-003",
+    "titel": "Energieausweis: Pflicht und Nutzen",
+    "slug": "energieausweis-pflicht-nutzen",
+    "inhalt": "Der Energieausweis ist bei Verkauf oder Vermietung Pflicht. Doch was genau sagt er aus und welche Arten gibt es?\n\n## Verbrauchsausweis vs. Bedarfsausweis\n\nDer Verbrauchsausweis basiert auf dem tatsächlichen Energieverbrauch der letzten drei Jahre. Der Bedarfsausweis wird anhand der baulichen Eigenschaften berechnet.\n\n## Wann ist welcher Ausweis nötig?\n\nFür Wohngebäude mit weniger als fünf Wohnungen, die vor 1978 gebaut wurden, ist der Bedarfsausweis vorgeschrieben. Für neuere oder größere Gebäude haben Sie die Wahl.\n\n## Kosten und Gültigkeit\n\nEin Energieausweis ist 10 Jahre gültig. Die Kosten variieren je nach Art zwischen 50 und 500 Euro.\n\n## Wir helfen Ihnen\n\nBei der Erstellung des Energieausweises unterstützen wir Sie gerne mit Kontakten zu zertifizierten Ausstellern.",
+    "kurzBeschreibung": "Was Sie über den Energieausweis wissen müssen: Arten, Pflichten und Kosten im Überblick.",
+    "autor": "Aaron Möller",
+    "bild": "/images/blog/energieausweis.jpg",
+    "status": "published",
+    "erstelltAm": "2024-09-05T14:00:00Z",
+    "veroeffentlichtAm": "2024-09-05T14:00:00Z"
+  }
+]

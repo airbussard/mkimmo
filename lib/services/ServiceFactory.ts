@@ -1,9 +1,11 @@
 import { IPropertyService } from './interfaces/IPropertyService'
 import { IManagedPropertyService } from './interfaces/IManagedPropertyService'
 import { IUnitService, ITenantService } from './interfaces/IUnitService'
+import { IBlogService } from './interfaces/IBlogService'
 import { JsonPropertyService } from './json/JsonPropertyService'
 import { JsonManagedPropertyService } from './json/JsonManagedPropertyService'
 import { JsonUnitService, JsonTenantService } from './json/JsonUnitService'
+import { JsonBlogService } from './json/JsonBlogService'
 
 type ServiceProvider = 'json' | 'supabase'
 
@@ -52,6 +54,16 @@ class ServiceFactory {
       case 'json':
       default:
         return new JsonTenantService()
+    }
+  }
+
+  getBlogService(): IBlogService {
+    switch (this.provider) {
+      case 'supabase':
+        throw new Error('Supabase noch nicht implementiert')
+      case 'json':
+      default:
+        return new JsonBlogService()
     }
   }
 }
