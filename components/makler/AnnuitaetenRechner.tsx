@@ -1,8 +1,18 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Calculator, Info, ChevronDown, ChevronUp, TrendingDown, Percent, Euro, Calendar } from 'lucide-react'
+import { Calculator, Info, ChevronDown, ChevronUp, TrendingDown, Percent, Euro, Calendar, BarChart3 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Legend,
+} from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -100,18 +110,29 @@ export function AnnuitaetenRechner() {
   }, [eingaben, darlehenssumme])
 
   const tilgungsplan = useMemo(() => {
-    if (!zeigeTilgungsplan || darlehenssumme <= 0) return []
+    if (darlehenssumme <= 0) return []
     try {
       return berechneTilgungsplan(eingaben)
     } catch {
       return []
     }
-  }, [eingaben, zeigeTilgungsplan, darlehenssumme])
+  }, [eingaben, darlehenssumme])
 
   const jahresZusammenfassung: JahresZusammenfassung[] = useMemo(() => {
     if (tilgungsplan.length === 0) return []
     return berechneJahresZusammenfassung(tilgungsplan)
   }, [tilgungsplan])
+
+  // Daten für den Chart
+  const chartData = useMemo(() => {
+    if (jahresZusammenfassung.length === 0) return []
+    return jahresZusammenfassung.slice(0, 40).map((zeile) => ({
+      jahr: `Jahr ${zeile.jahr}`,
+      zinsen: Math.round(zeile.zinsenGesamt),
+      tilgung: Math.round(zeile.tilgungGesamt),
+      restschuld: Math.round(zeile.restschuldEnde),
+    }))
+  }, [jahresZusammenfassung])
 
   // Handler für numerische Eingaben
   const handleNumericInput = (
@@ -357,6 +378,82 @@ export function AnnuitaetenRechner() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Grafische Darstellung */}
+      {ergebnis && chartData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary-600" />
+              Tilgungsverlauf
+            </CardTitle>
+            <CardDescription>
+              Entwicklung von Zins- und Tilgungsanteil über die Laufzeit
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="h-80 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis
+                    dataKey="jahr"
+                    tick={{ fontSize: 12 }}
+                    tickLine={{ stroke: '#9ca3af' }}
+                    interval={Math.ceil(chartData.length / 8)}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12 }}
+                    tickLine={{ stroke: '#9ca3af' }}
+                    tickFormatter={(value) => `${(value / 1000).toFixed(0)}k €`}
+                  />
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      formatWaehrung(value),
+                      name === 'zinsen' ? 'Zinsen' : name === 'tilgung' ? 'Tilgung' : 'Restschuld'
+                    ]}
+                    labelStyle={{ fontWeight: 'bold' }}
+                    contentStyle={{
+                      backgroundColor: 'white',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                  <Legend
+                    formatter={(value) =>
+                      value === 'zinsen' ? 'Zinsen' : value === 'tilgung' ? 'Tilgung' : 'Restschuld'
+                    }
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="zinsen"
+                    stackId="1"
+                    stroke="#ef4444"
+                    fill="#fca5a5"
+                    name="zinsen"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="tilgung"
+                    stackId="1"
+                    stroke="#0f1a2e"
+                    fill="#1e3a5f"
+                    name="tilgung"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-secondary-500 mt-4 text-center">
+              Der Chart zeigt, wie sich der Anteil der Zinsen (rot) im Laufe der Zeit verringert,
+              während der Tilgungsanteil (blau) steigt. Die Summe beider ergibt Ihre jährliche Zahlung.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Tilgungsplan Toggle */}
       <Card>

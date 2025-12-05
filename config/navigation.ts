@@ -32,24 +32,24 @@ export const MAKLER_NAVIGATION: NavItem[] = [
     href: '/',
   },
   {
-    titel: 'Immobilien',
-    href: '/makler/immobilien',
+    titel: 'Kaufen',
+    href: '/makler/kaufen',
   },
   {
-    titel: 'Kaufnebenkosten-Rechner',
+    titel: 'Mieten',
+    href: '/makler/mieten',
+  },
+  {
+    titel: 'Verkaufen',
+    href: '/makler/verkaufen',
+  },
+  {
+    titel: 'Rechner',
     href: '/makler/kaufnebenkosten-rechner',
   },
   {
-    titel: 'Darlehensrechner',
-    href: '/makler/darlehensrechner',
-  },
-  {
-    titel: 'Über uns',
-    href: '/makler/ueber-uns',
-  },
-  {
     titel: 'Kontakt',
-    href: '/kontakt',
+    href: '/makler/kontakt',
   },
 ]
 
@@ -60,16 +60,16 @@ export const HAUSVERWALTUNG_NAVIGATION: NavItem[] = [
     href: '/',
   },
   {
-    titel: 'Verwaltete Objekte',
-    href: '/hausverwaltung',
+    titel: 'Objekte',
+    href: '/hausverwaltung/objekte',
   },
   {
-    titel: 'Anfrage stellen',
+    titel: 'Anfrage',
     href: '/hausverwaltung/anfrage',
   },
   {
     titel: 'Kontakt',
-    href: '/kontakt',
+    href: '/hausverwaltung/kontakt',
   },
 ]
 
@@ -95,7 +95,7 @@ export const FOOTER_NAVIGATION = {
 
 export const COMPANY_INFO = {
   name: 'Möller & Knabe GbR',
-  strasse: 'Franz-Liszt Str 11',
+  strasse: 'Gräserstr. 6',
   plz: '52249',
   ort: 'Eschweiler',
   email: 'info@moellerknabe.de',

@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Building2, FileText, Wrench, Users, Shield, Phone, Clock, CheckCircle, ArrowRight } from 'lucide-react'
+import { Building2, FileText, Wrench, Users, Shield, Phone, Clock, CheckCircle, ArrowRight, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/config/navigation'
 
@@ -41,7 +41,7 @@ export default function HausverwaltungLandingPage() {
           <h2 className="text-2xl md:text-3xl font-bold text-center text-secondary-900 mb-12">
             Unsere Leistungen
           </h2>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             <div className="bg-white border border-secondary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
               <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
                 <FileText className="w-7 h-7 text-primary-600" />
@@ -111,6 +111,30 @@ export default function HausverwaltungLandingPage() {
                 <li className="flex items-start gap-2">
                   <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
                   <span>Konfliktmanagement</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white border border-secondary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <Heart className="w-7 h-7 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-3">Verlässlichkeit</h3>
+              <ul className="text-secondary-600 space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Antwort innerhalb 48h garantiert</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Zügige Problemlösungen</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Abrechnung bis Sept. des Folgejahres</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Freundlich & kompetent</span>
                 </li>
               </ul>
             </div>

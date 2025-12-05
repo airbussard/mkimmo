@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Home, TrendingUp, Users, Award, Clock, CheckCircle, ArrowRight, Calculator } from 'lucide-react'
+import { Home, TrendingUp, Users, Award, Clock, CheckCircle, ArrowRight, Calculator, Key } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/config/navigation'
 
@@ -163,6 +163,47 @@ export default function MaklerLandingPage() {
         </div>
       </section>
 
+      {/* Verkäufer CTA Section */}
+      <section className="py-16 md:py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto bg-gradient-to-r from-primary-600 to-primary-800 rounded-2xl p-8 md:p-12">
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              <div className="text-white">
+                <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                  Sie möchten verkaufen?
+                </h2>
+                <p className="text-primary-100 mb-6">
+                  Profitieren Sie von unserer Erfahrung und Marktkenntnis. Wir verkaufen
+                  Ihre Immobilie zum bestmöglichen Preis – diskret und professionell.
+                </p>
+                <ul className="space-y-2 mb-6">
+                  <li className="flex items-center gap-2 text-primary-100">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                    Kostenlose Immobilienbewertung
+                  </li>
+                  <li className="flex items-center gap-2 text-primary-100">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                    Professionelle Vermarktung
+                  </li>
+                  <li className="flex items-center gap-2 text-primary-100">
+                    <CheckCircle className="w-5 h-5 text-white" />
+                    Betreuung bis zum Notartermin
+                  </li>
+                </ul>
+              </div>
+              <div className="text-center md:text-right">
+                <Button asChild size="lg" variant="secondary" className="text-lg px-8">
+                  <Link href="/makler/verkaufen">
+                    <TrendingUp className="w-5 h-5 mr-2" />
+                    Jetzt verkaufen
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="bg-primary-600 py-16 md:py-20">
         <div className="container mx-auto px-4 text-center">
@@ -174,8 +215,8 @@ export default function MaklerLandingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button asChild size="lg" variant="secondary">
-              <Link href="/makler/immobilien">
-                Alle Immobilien ansehen
+              <Link href="/makler/kaufen">
+                Immobilien zum Kauf
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
@@ -185,7 +226,7 @@ export default function MaklerLandingPage() {
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-primary-600"
             >
-              <Link href="/kontakt">Kontakt aufnehmen</Link>
+              <Link href="/makler/kontakt">Kontakt aufnehmen</Link>
             </Button>
           </div>
         </div>
