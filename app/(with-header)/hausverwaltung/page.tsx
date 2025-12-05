@@ -1,6 +1,8 @@
 import { Metadata } from 'next'
-import { ManagedPropertyCard } from '@/components/hausverwaltung/ManagedPropertyCard'
-import { serviceFactory } from '@/lib/services/ServiceFactory'
+import Link from 'next/link'
+import { Building2, FileText, Wrench, Users, Shield, Phone, Clock, CheckCircle, ArrowRight } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { COMPANY_INFO } from '@/config/navigation'
 
 export const metadata: Metadata = {
   title: 'Hausverwaltung',
@@ -8,66 +10,210 @@ export const metadata: Metadata = {
     'Professionelle Hausverwaltung in Eschweiler und Umgebung. Wir kümmern uns um Ihre Immobilie – von der Mieterbetreuung bis zur Instandhaltung.',
 }
 
-export default async function HausverwaltungPage() {
-  const managedPropertyService = serviceFactory.getManagedPropertyService()
-  const properties = await managedPropertyService.getAll()
-
+export default function HausverwaltungLandingPage() {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-secondary-900 mb-2">Hausverwaltung</h1>
-        <p className="text-secondary-600 max-w-2xl">
-          Wir verwalten Ihre Immobilie professionell und zuverlässig. Von der Mieterbetreuung über
-          die Nebenkostenabrechnung bis zur Instandhaltung – wir kümmern uns um alles.
-        </p>
-      </div>
-
-      {/* Verwaltete Objekte */}
-      <div className="mb-12">
-        <h2 className="text-xl font-semibold mb-4">Unsere verwalteten Objekte</h2>
-        <p className="text-sm text-muted-foreground mb-6">
-          {properties.length} Objekt{properties.length !== 1 ? 'e' : ''} in der Verwaltung
-        </p>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {properties.map((property) => (
-            <ManagedPropertyCard key={property.id} property={property} />
-          ))}
-        </div>
-      </div>
-
-      {/* Leistungen */}
-      <div className="bg-secondary-50 rounded-xl p-8">
-        <h2 className="text-xl font-semibold mb-6 text-center">Unsere Leistungen</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div className="bg-white rounded-lg p-6">
-            <h3 className="font-semibold mb-2">Kaufmännische Verwaltung</h3>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Mietbuchhaltung</li>
-              <li>• Nebenkostenabrechnung</li>
-              <li>• Mahnwesen</li>
-              <li>• Wirtschaftsplanung</li>
-            </ul>
-          </div>
-          <div className="bg-white rounded-lg p-6">
-            <h3 className="font-semibold mb-2">Technische Verwaltung</h3>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Instandhaltung</li>
-              <li>• Reparaturmanagement</li>
-              <li>• Wartungsverträge</li>
-              <li>• Modernisierungen</li>
-            </ul>
-          </div>
-          <div className="bg-white rounded-lg p-6">
-            <h3 className="font-semibold mb-2">Mieterbetreuung</h3>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Ansprechpartner für Mieter</li>
-              <li>• Wohnungsübergaben</li>
-              <li>• Mietersuche</li>
-              <li>• Konfliktmanagement</li>
-            </ul>
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="bg-gradient-to-b from-secondary-50 to-white py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6">
+              Professionelle Hausverwaltung
+            </h1>
+            <p className="text-lg md:text-xl text-secondary-600 mb-8">
+              Wir verwalten Ihre Immobilie zuverlässig und kompetent. Von der
+              Mieterbetreuung über die Nebenkostenabrechnung bis zur Instandhaltung –
+              wir kümmern uns um alles.
+            </p>
+            <Button asChild size="lg">
+              <Link href="/hausverwaltung/anfrage">
+                <FileText className="w-5 h-5 mr-2" />
+                Jetzt Anfrage stellen
+              </Link>
+            </Button>
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Leistungen Section */}
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-secondary-900 mb-12">
+            Unsere Leistungen
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="bg-white border border-secondary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <FileText className="w-7 h-7 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-3">Kaufmännische Verwaltung</h3>
+              <ul className="text-secondary-600 space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Mietbuchhaltung</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Nebenkostenabrechnung</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Mahnwesen</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Wirtschaftsplanung</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white border border-secondary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <Wrench className="w-7 h-7 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-3">Technische Verwaltung</h3>
+              <ul className="text-secondary-600 space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Instandhaltung</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Reparaturmanagement</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Wartungsverträge</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Modernisierungen</span>
+                </li>
+              </ul>
+            </div>
+            <div className="bg-white border border-secondary-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-primary-100 rounded-lg flex items-center justify-center mb-4">
+                <Users className="w-7 h-7 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-3">Mieterbetreuung</h3>
+              <ul className="text-secondary-600 space-y-2">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Ansprechpartner für Mieter</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Wohnungsübergaben</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Mietersuche</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 text-primary-600 mt-1 flex-shrink-0" />
+                  <span>Konfliktmanagement</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Vorteile Section */}
+      <section className="bg-secondary-50 py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl md:text-3xl font-bold text-center text-secondary-900 mb-12">
+            Ihre Vorteile mit {COMPANY_INFO.name}
+          </h2>
+          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <Shield className="w-8 h-8 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-2">Transparenz</h3>
+              <p className="text-secondary-600">
+                Übersichtliche Abrechnungen und regelmäßige Berichte. Sie behalten
+                stets den Überblick über Ihre Immobilie.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <Phone className="w-8 h-8 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-2">Erreichbarkeit</h3>
+              <p className="text-secondary-600">
+                Wir sind für Sie und Ihre Mieter da – auch bei dringenden Anliegen
+                schnell erreichbar.
+              </p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">
+                <Clock className="w-8 h-8 text-primary-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-secondary-900 mb-2">Erfahrung</h3>
+              <p className="text-secondary-600">
+                Profitieren Sie von unserer langjährigen Erfahrung in der
+                Immobilienverwaltung.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Statistiken Section */}
+      <section className="py-16 md:py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto text-center">
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">50+</div>
+              <p className="text-secondary-600">Verwaltete Objekte</p>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">500+</div>
+              <p className="text-secondary-600">Wohneinheiten</p>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">15+</div>
+              <p className="text-secondary-600">Jahre Erfahrung</p>
+            </div>
+            <div>
+              <div className="text-3xl md:text-4xl font-bold text-primary-600 mb-2">24h</div>
+              <p className="text-secondary-600">Notfall-Service</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="bg-primary-600 py-16 md:py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            Interesse an unserer Hausverwaltung?
+          </h2>
+          <p className="text-primary-100 mb-8 max-w-xl mx-auto">
+            Kontaktieren Sie uns für ein unverbindliches Angebot. Wir beraten Sie
+            gerne zu unseren Leistungen und Konditionen.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button asChild size="lg" variant="secondary">
+              <Link href="/hausverwaltung/anfrage">
+                Anfrage stellen
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-primary-600"
+            >
+              <Link href={`tel:${COMPANY_INFO.telefon}`}>
+                <Phone className="w-4 h-4 mr-2" />
+                {COMPANY_INFO.telefon}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

@@ -17,7 +17,7 @@ export const MAIN_NAVIGATION: NavItem[] = [
     children: [
       {
         titel: 'Immobilien',
-        href: '/makler',
+        href: '/makler/immobilien',
         beschreibung: 'Alle verfügbaren Objekte',
       },
       {
