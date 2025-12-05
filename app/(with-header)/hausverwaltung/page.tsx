@@ -227,8 +227,7 @@ export default function HausverwaltungLandingPage() {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary-600"
+              variant="secondary"
             >
               <Link href={`tel:${COMPANY_INFO.telefon}`}>
                 <Phone className="w-4 h-4 mr-2" />
