@@ -26,6 +26,11 @@ export const MAIN_NAVIGATION: NavItem[] = [
         beschreibung: 'Nebenkosten berechnen',
       },
       {
+        titel: 'Annuitätendarlehen-Rechner',
+        href: '/makler/darlehensrechner',
+        beschreibung: 'Finanzierung berechnen',
+      },
+      {
         titel: 'Über uns',
         href: '/makler/ueber-uns',
         beschreibung: 'Unser Makler-Team',
@@ -52,6 +57,7 @@ export const FOOTER_NAVIGATION = {
     { titel: 'Makler', href: '/makler' },
     { titel: 'Hausverwaltung', href: '/hausverwaltung' },
     { titel: 'Kaufnebenkosten-Rechner', href: '/makler/kaufnebenkosten-rechner' },
+    { titel: 'Darlehensrechner', href: '/makler/darlehensrechner' },
   ],
   rechtliches: [
     { titel: 'Impressum', href: '/impressum' },
