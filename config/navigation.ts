@@ -5,7 +5,8 @@ export interface NavItem {
   children?: NavItem[]
 }
 
-export const MAIN_NAVIGATION: NavItem[] = [
+// Standard-Navigation (Homepage, Legal-Seiten)
+export const DEFAULT_NAVIGATION: NavItem[] = [
   {
     titel: 'Startseite',
     href: '/',
@@ -13,40 +14,67 @@ export const MAIN_NAVIGATION: NavItem[] = [
   {
     titel: 'Makler',
     href: '/makler',
-    beschreibung: 'Immobilien kaufen und verkaufen',
-    children: [
-      {
-        titel: 'Immobilien',
-        href: '/makler/immobilien',
-        beschreibung: 'Alle verfügbaren Objekte',
-      },
-      {
-        titel: 'Kaufnebenkosten-Rechner',
-        href: '/makler/kaufnebenkosten-rechner',
-        beschreibung: 'Nebenkosten berechnen',
-      },
-      {
-        titel: 'Annuitätendarlehen-Rechner',
-        href: '/makler/darlehensrechner',
-        beschreibung: 'Finanzierung berechnen',
-      },
-      {
-        titel: 'Über uns',
-        href: '/makler/ueber-uns',
-        beschreibung: 'Unser Makler-Team',
-      },
-    ],
   },
   {
     titel: 'Hausverwaltung',
     href: '/hausverwaltung',
-    beschreibung: 'Professionelle Immobilienverwaltung',
   },
   {
     titel: 'Kontakt',
     href: '/kontakt',
   },
 ]
+
+// Navigation im Makler-Bereich
+export const MAKLER_NAVIGATION: NavItem[] = [
+  {
+    titel: 'Startseite',
+    href: '/',
+  },
+  {
+    titel: 'Immobilien',
+    href: '/makler/immobilien',
+  },
+  {
+    titel: 'Kaufnebenkosten-Rechner',
+    href: '/makler/kaufnebenkosten-rechner',
+  },
+  {
+    titel: 'Darlehensrechner',
+    href: '/makler/darlehensrechner',
+  },
+  {
+    titel: 'Über uns',
+    href: '/makler/ueber-uns',
+  },
+  {
+    titel: 'Kontakt',
+    href: '/kontakt',
+  },
+]
+
+// Navigation im Hausverwaltungs-Bereich
+export const HAUSVERWALTUNG_NAVIGATION: NavItem[] = [
+  {
+    titel: 'Startseite',
+    href: '/',
+  },
+  {
+    titel: 'Verwaltete Objekte',
+    href: '/hausverwaltung',
+  },
+  {
+    titel: 'Anfrage stellen',
+    href: '/hausverwaltung/anfrage',
+  },
+  {
+    titel: 'Kontakt',
+    href: '/kontakt',
+  },
+]
+
+// Legacy export für Abwärtskompatibilität
+export const MAIN_NAVIGATION = DEFAULT_NAVIGATION
 
 export const FOOTER_NAVIGATION = {
   unternehmen: [
