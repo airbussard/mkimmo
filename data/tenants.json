@@ -1,0 +1,243 @@
+[
+  {
+    "id": "tenant-001",
+    "einheitId": "unit-001",
+    "name": "Familie Schmidt",
+    "email": "schmidt@beispiel.de",
+    "telefon": "+49 2403 11111",
+    "mietvertrag": {
+      "beginn": "2022-03-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 3,
+    "status": "aktiv",
+    "erstelltAm": "2022-02-15",
+    "aktualisiertAm": "2024-11-01"
+  },
+  {
+    "id": "tenant-002",
+    "einheitId": "unit-002",
+    "name": "Herr Müller",
+    "email": "mueller@beispiel.de",
+    "telefon": "+49 2403 22222",
+    "mietvertrag": {
+      "beginn": "2020-06-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 1,
+    "status": "aktiv",
+    "erstelltAm": "2020-05-20",
+    "aktualisiertAm": "2024-10-20"
+  },
+  {
+    "id": "tenant-003",
+    "einheitId": "unit-004",
+    "name": "Familie Weber",
+    "email": "weber@beispiel.de",
+    "telefon": "+49 2403 33333",
+    "mietvertrag": {
+      "beginn": "2021-09-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 4,
+    "status": "aktiv",
+    "erstelltAm": "2021-08-15",
+    "aktualisiertAm": "2024-09-15"
+  },
+  {
+    "id": "tenant-004",
+    "einheitId": "unit-005",
+    "name": "Frau Meyer",
+    "email": "meyer@beispiel.de",
+    "telefon": "+49 2403 44444",
+    "mietvertrag": {
+      "beginn": "2019-01-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 2,
+    "status": "aktiv",
+    "erstelltAm": "2018-12-10",
+    "aktualisiertAm": "2024-08-01"
+  },
+  {
+    "id": "tenant-005",
+    "einheitId": "unit-007",
+    "name": "Mode Boutique GmbH",
+    "email": "kontakt@mode-boutique.de",
+    "telefon": "+49 2403 55555",
+    "mietvertrag": {
+      "beginn": "2021-01-01",
+      "ende": "2025-12-31",
+      "typ": "befristet",
+      "kuendigungsfrist": 6
+    },
+    "bewohner": 0,
+    "status": "aktiv",
+    "erstelltAm": "2020-11-01",
+    "aktualisiertAm": "2024-10-01"
+  },
+  {
+    "id": "tenant-006",
+    "einheitId": "unit-009",
+    "name": "Herr Schulz",
+    "email": "schulz@beispiel.de",
+    "telefon": "+49 2403 66666",
+    "mietvertrag": {
+      "beginn": "2022-08-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 1,
+    "status": "aktiv",
+    "erstelltAm": "2022-07-15",
+    "aktualisiertAm": "2024-07-15"
+  },
+  {
+    "id": "tenant-007",
+    "einheitId": "unit-010",
+    "name": "Familie Fischer",
+    "email": "fischer@beispiel.de",
+    "telefon": "+49 2403 77777",
+    "mietvertrag": {
+      "beginn": "2021-04-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 3,
+    "status": "aktiv",
+    "erstelltAm": "2021-03-10",
+    "aktualisiertAm": "2024-09-20"
+  },
+  {
+    "id": "tenant-008",
+    "einheitId": "unit-011",
+    "name": "Familie Wagner",
+    "email": "wagner@beispiel.de",
+    "telefon": "+49 2403 88888",
+    "mietvertrag": {
+      "beginn": "2017-06-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 4,
+    "status": "aktiv",
+    "erstelltAm": "2017-05-15",
+    "aktualisiertAm": "2024-06-01"
+  },
+  {
+    "id": "tenant-009",
+    "einheitId": "unit-012",
+    "name": "Herr Becker",
+    "email": "becker@beispiel.de",
+    "telefon": "+49 2403 99999",
+    "mietvertrag": {
+      "beginn": "2019-03-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 2,
+    "status": "aktiv",
+    "erstelltAm": "2019-02-10",
+    "aktualisiertAm": "2024-05-15"
+  },
+  {
+    "id": "tenant-010",
+    "einheitId": "unit-014",
+    "name": "Familie Hoffmann",
+    "email": "hoffmann@beispiel.de",
+    "telefon": "+49 2403 10101",
+    "mietvertrag": {
+      "beginn": "2016-09-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 5,
+    "status": "aktiv",
+    "erstelltAm": "2016-08-15",
+    "aktualisiertAm": "2024-04-10"
+  },
+  {
+    "id": "tenant-011",
+    "einheitId": "unit-015",
+    "name": "Frau Koch",
+    "email": "koch@beispiel.de",
+    "telefon": "+49 2403 12121",
+    "mietvertrag": {
+      "beginn": "2020-11-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 1,
+    "status": "aktiv",
+    "erstelltAm": "2020-10-15",
+    "aktualisiertAm": "2024-08-20"
+  },
+  {
+    "id": "tenant-012",
+    "einheitId": "unit-016",
+    "name": "Herr Richter",
+    "email": "richter@beispiel.de",
+    "telefon": "+49 2403 13131",
+    "mietvertrag": {
+      "beginn": "2021-02-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 2,
+    "status": "aktiv",
+    "erstelltAm": "2021-01-10",
+    "aktualisiertAm": "2024-07-01"
+  },
+  {
+    "id": "tenant-013",
+    "einheitId": "unit-017",
+    "name": "Familie Klein",
+    "email": "klein@beispiel.de",
+    "telefon": "+49 2403 14141",
+    "mietvertrag": {
+      "beginn": "2022-05-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 3,
+    "status": "aktiv",
+    "erstelltAm": "2022-04-15",
+    "aktualisiertAm": "2024-06-15"
+  },
+  {
+    "id": "tenant-014",
+    "einheitId": "unit-019",
+    "name": "Frau Wolf",
+    "email": "wolf@beispiel.de",
+    "telefon": "+49 2403 15151",
+    "mietvertrag": {
+      "beginn": "2023-01-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 1,
+    "status": "aktiv",
+    "erstelltAm": "2022-12-10",
+    "aktualisiertAm": "2024-05-20"
+  },
+  {
+    "id": "tenant-015",
+    "einheitId": "unit-020",
+    "name": "Familie Schäfer",
+    "email": "schaefer@beispiel.de",
+    "telefon": "+49 2403 16161",
+    "mietvertrag": {
+      "beginn": "2020-03-01",
+      "typ": "unbefristet",
+      "kuendigungsfrist": 3
+    },
+    "bewohner": 4,
+    "status": "aktiv",
+    "erstelltAm": "2020-02-15",
+    "aktualisiertAm": "2024-03-15"
+  }
+]

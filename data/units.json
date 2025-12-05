@@ -1,0 +1,569 @@
+[
+  {
+    "id": "unit-001",
+    "objektId": "mgmt-001",
+    "einheitNummer": "1.01",
+    "etage": 1,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 75,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 8,
+      "keller": true,
+      "kellerFlaeche": 6
+    },
+    "miete": {
+      "kaltmiete": 650,
+      "nebenkosten": 180,
+      "warmmiete": 830,
+      "kaution": 1950
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-001",
+    "dokumente": [
+      { "id": "doc-001", "name": "Mietvertrag Schmidt", "typ": "mietvertrag", "hochgeladenAm": "2022-03-15", "url": "/dokumente/placeholder.pdf" }
+    ],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-11-01"
+  },
+  {
+    "id": "unit-002",
+    "objektId": "mgmt-001",
+    "einheitNummer": "1.02",
+    "etage": 1,
+    "lage": "rechts",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 82,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 10,
+      "keller": true,
+      "kellerFlaeche": 6
+    },
+    "miete": {
+      "kaltmiete": 720,
+      "nebenkosten": 195,
+      "warmmiete": 915,
+      "kaution": 2160
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-002",
+    "dokumente": [],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-10-20"
+  },
+  {
+    "id": "unit-003",
+    "objektId": "mgmt-001",
+    "einheitNummer": "2.01",
+    "etage": 2,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 75,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 8,
+      "keller": true,
+      "kellerFlaeche": 6
+    },
+    "miete": {
+      "kaltmiete": 680,
+      "nebenkosten": 180,
+      "warmmiete": 860,
+      "kaution": 2040
+    },
+    "status": "leer",
+    "dokumente": [],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-11-30"
+  },
+  {
+    "id": "unit-004",
+    "objektId": "mgmt-001",
+    "einheitNummer": "2.02",
+    "etage": 2,
+    "lage": "rechts",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 82,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 10,
+      "keller": true,
+      "kellerFlaeche": 6
+    },
+    "miete": {
+      "kaltmiete": 750,
+      "nebenkosten": 195,
+      "warmmiete": 945,
+      "kaution": 2250
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-003",
+    "dokumente": [],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-09-15"
+  },
+  {
+    "id": "unit-005",
+    "objektId": "mgmt-001",
+    "einheitNummer": "3.01",
+    "etage": 3,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 95,
+      "zimmer": 4,
+      "schlafzimmer": 3,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 12,
+      "keller": true,
+      "kellerFlaeche": 8
+    },
+    "miete": {
+      "kaltmiete": 850,
+      "nebenkosten": 220,
+      "warmmiete": 1070,
+      "kaution": 2550
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-004",
+    "dokumente": [],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-08-01"
+  },
+  {
+    "id": "unit-006",
+    "objektId": "mgmt-001",
+    "einheitNummer": "4.01",
+    "etage": 4,
+    "lage": "mitte",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 110,
+      "zimmer": 4,
+      "schlafzimmer": 3,
+      "badezimmer": 2,
+      "balkon": true,
+      "balkonFlaeche": 15,
+      "keller": true,
+      "kellerFlaeche": 10
+    },
+    "miete": {
+      "kaltmiete": 980,
+      "nebenkosten": 250,
+      "warmmiete": 1230,
+      "kaution": 2940
+    },
+    "status": "renovierung",
+    "dokumente": [],
+    "erstelltAm": "2018-01-15",
+    "aktualisiertAm": "2024-11-25"
+  },
+  {
+    "id": "unit-007",
+    "objektId": "mgmt-002",
+    "einheitNummer": "EG-01",
+    "etage": 0,
+    "lage": "links",
+    "typ": "gewerbe",
+    "details": {
+      "flaeche": 120,
+      "zimmer": 2,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 30
+    },
+    "miete": {
+      "kaltmiete": 1800,
+      "nebenkosten": 400,
+      "warmmiete": 2200,
+      "kaution": 5400
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-005",
+    "dokumente": [],
+    "erstelltAm": "2020-06-15",
+    "aktualisiertAm": "2024-10-01"
+  },
+  {
+    "id": "unit-008",
+    "objektId": "mgmt-002",
+    "einheitNummer": "EG-02",
+    "etage": 0,
+    "lage": "rechts",
+    "typ": "gewerbe",
+    "details": {
+      "flaeche": 85,
+      "zimmer": 1,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 20
+    },
+    "miete": {
+      "kaltmiete": 1400,
+      "nebenkosten": 280,
+      "warmmiete": 1680,
+      "kaution": 4200
+    },
+    "status": "leer",
+    "dokumente": [],
+    "erstelltAm": "2020-06-15",
+    "aktualisiertAm": "2024-11-20"
+  },
+  {
+    "id": "unit-009",
+    "objektId": "mgmt-002",
+    "einheitNummer": "1.01",
+    "etage": 1,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 68,
+      "zimmer": 2,
+      "schlafzimmer": 1,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 6,
+      "keller": true,
+      "kellerFlaeche": 5
+    },
+    "miete": {
+      "kaltmiete": 620,
+      "nebenkosten": 160,
+      "warmmiete": 780,
+      "kaution": 1860
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-006",
+    "dokumente": [],
+    "erstelltAm": "2020-06-15",
+    "aktualisiertAm": "2024-07-15"
+  },
+  {
+    "id": "unit-010",
+    "objektId": "mgmt-002",
+    "einheitNummer": "2.01",
+    "etage": 2,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 72,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 8,
+      "keller": true,
+      "kellerFlaeche": 5
+    },
+    "miete": {
+      "kaltmiete": 680,
+      "nebenkosten": 175,
+      "warmmiete": 855,
+      "kaution": 2040
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-007",
+    "dokumente": [],
+    "erstelltAm": "2020-06-15",
+    "aktualisiertAm": "2024-09-20"
+  },
+  {
+    "id": "unit-011",
+    "objektId": "mgmt-003",
+    "einheitNummer": "EG-01",
+    "etage": 0,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 85,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 8
+    },
+    "miete": {
+      "kaltmiete": 780,
+      "nebenkosten": 140,
+      "warmmiete": 920,
+      "kaution": 2340
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-008",
+    "dokumente": [],
+    "erstelltAm": "2015-03-20",
+    "aktualisiertAm": "2024-06-01"
+  },
+  {
+    "id": "unit-012",
+    "objektId": "mgmt-003",
+    "einheitNummer": "EG-02",
+    "etage": 0,
+    "lage": "rechts",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 85,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 8
+    },
+    "miete": {
+      "kaltmiete": 780,
+      "nebenkosten": 140,
+      "warmmiete": 920,
+      "kaution": 2340
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-009",
+    "dokumente": [],
+    "erstelltAm": "2015-03-20",
+    "aktualisiertAm": "2024-05-15"
+  },
+  {
+    "id": "unit-013",
+    "objektId": "mgmt-003",
+    "einheitNummer": "1.01",
+    "etage": 1,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 85,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 6,
+      "keller": true,
+      "kellerFlaeche": 8
+    },
+    "miete": {
+      "kaltmiete": 820,
+      "nebenkosten": 145,
+      "warmmiete": 965,
+      "kaution": 2460
+    },
+    "status": "leer",
+    "dokumente": [],
+    "erstelltAm": "2015-03-20",
+    "aktualisiertAm": "2024-11-28"
+  },
+  {
+    "id": "unit-014",
+    "objektId": "mgmt-003",
+    "einheitNummer": "2.01",
+    "etage": 2,
+    "lage": "mitte",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 105,
+      "zimmer": 4,
+      "schlafzimmer": 3,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 10,
+      "keller": true,
+      "kellerFlaeche": 12
+    },
+    "miete": {
+      "kaltmiete": 980,
+      "nebenkosten": 170,
+      "warmmiete": 1150,
+      "kaution": 2940
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-010",
+    "dokumente": [],
+    "erstelltAm": "2015-03-20",
+    "aktualisiertAm": "2024-04-10"
+  },
+  {
+    "id": "unit-015",
+    "objektId": "mgmt-004",
+    "einheitNummer": "1.01",
+    "etage": 1,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 55,
+      "zimmer": 2,
+      "schlafzimmer": 1,
+      "badezimmer": 1,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 4
+    },
+    "miete": {
+      "kaltmiete": 480,
+      "nebenkosten": 130,
+      "warmmiete": 610,
+      "kaution": 1440
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-011",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-08-20"
+  },
+  {
+    "id": "unit-016",
+    "objektId": "mgmt-004",
+    "einheitNummer": "1.02",
+    "etage": 1,
+    "lage": "rechts",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 68,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": false,
+      "keller": true,
+      "kellerFlaeche": 5
+    },
+    "miete": {
+      "kaltmiete": 580,
+      "nebenkosten": 155,
+      "warmmiete": 735,
+      "kaution": 1740
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-012",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-07-01"
+  },
+  {
+    "id": "unit-017",
+    "objektId": "mgmt-004",
+    "einheitNummer": "2.01",
+    "etage": 2,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 55,
+      "zimmer": 2,
+      "schlafzimmer": 1,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 4,
+      "keller": true,
+      "kellerFlaeche": 4
+    },
+    "miete": {
+      "kaltmiete": 520,
+      "nebenkosten": 130,
+      "warmmiete": 650,
+      "kaution": 1560
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-013",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-06-15"
+  },
+  {
+    "id": "unit-018",
+    "objektId": "mgmt-004",
+    "einheitNummer": "3.01",
+    "etage": 3,
+    "lage": "mitte",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 78,
+      "zimmer": 3,
+      "schlafzimmer": 2,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 6,
+      "keller": true,
+      "kellerFlaeche": 6
+    },
+    "miete": {
+      "kaltmiete": 680,
+      "nebenkosten": 175,
+      "warmmiete": 855,
+      "kaution": 2040
+    },
+    "status": "leer",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-11-30"
+  },
+  {
+    "id": "unit-019",
+    "objektId": "mgmt-004",
+    "einheitNummer": "4.01",
+    "etage": 4,
+    "lage": "links",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 62,
+      "zimmer": 2,
+      "schlafzimmer": 1,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 5,
+      "keller": true,
+      "kellerFlaeche": 5
+    },
+    "miete": {
+      "kaltmiete": 560,
+      "nebenkosten": 145,
+      "warmmiete": 705,
+      "kaution": 1680
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-014",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-05-20"
+  },
+  {
+    "id": "unit-020",
+    "objektId": "mgmt-004",
+    "einheitNummer": "5.01",
+    "etage": 5,
+    "lage": "mitte",
+    "typ": "wohnung",
+    "details": {
+      "flaeche": 95,
+      "zimmer": 4,
+      "schlafzimmer": 3,
+      "badezimmer": 1,
+      "balkon": true,
+      "balkonFlaeche": 12,
+      "keller": true,
+      "kellerFlaeche": 8
+    },
+    "miete": {
+      "kaltmiete": 850,
+      "nebenkosten": 210,
+      "warmmiete": 1060,
+      "kaution": 2550
+    },
+    "status": "vermietet",
+    "mieterId": "tenant-015",
+    "dokumente": [],
+    "erstelltAm": "2019-09-10",
+    "aktualisiertAm": "2024-03-15"
+  }
+]
