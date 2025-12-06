@@ -3,6 +3,8 @@ import { Building2, Users, Layers, MapPin } from 'lucide-react'
 import { ManagedPropertyCard } from '@/components/hausverwaltung/ManagedPropertyCard'
 import { serviceFactory } from '@/lib/services/ServiceFactory'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Verwaltete Objekte',
   description: 'Übersicht unserer verwalteten Immobilien. Wohngebäude, Gewerbeimmobilien und gemischt genutzte Objekte.',

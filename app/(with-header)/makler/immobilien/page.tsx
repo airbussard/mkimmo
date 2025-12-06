@@ -3,6 +3,8 @@ import { PropertyFilters } from '@/components/makler/PropertyFilters'
 import { PropertyGrid } from '@/components/makler/PropertyGrid'
 import { serviceFactory } from '@/lib/services/ServiceFactory'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Immobilien',
   description:

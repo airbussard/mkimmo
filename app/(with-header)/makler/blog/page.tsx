@@ -3,6 +3,8 @@ import { BookOpen } from 'lucide-react'
 import { BlogCard } from '@/components/blog/BlogCard'
 import { serviceFactory } from '@/lib/services/ServiceFactory'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'Blog - Immobilien-Ratgeber',
   description:
