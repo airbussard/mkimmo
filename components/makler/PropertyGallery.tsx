@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ImagePlaceholder } from '@/components/shared/ImagePlaceholder'
@@ -27,11 +28,19 @@ export function PropertyGallery({ bilder, titel }: PropertyGalleryProps) {
     return <ImagePlaceholder aspectRatio="video" className="w-full" />
   }
 
+  const currentImage = bilder[currentIndex]
+
   return (
     <div className="space-y-4">
       {/* Hauptbild */}
       <div className="relative aspect-video bg-secondary-100 rounded-lg overflow-hidden">
-        <ImagePlaceholder aspectRatio="video" className="w-full h-full" />
+        <Image
+          src={currentImage.url}
+          alt={currentImage.alt || `${titel} - Bild ${currentIndex + 1}`}
+          fill
+          className="object-cover"
+          priority={currentIndex === 0}
+        />
 
         {bilder.length > 1 && (
           <>
@@ -70,14 +79,17 @@ export function PropertyGallery({ bilder, titel }: PropertyGalleryProps) {
               key={index}
               onClick={() => setCurrentIndex(index)}
               className={cn(
-                'flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all',
+                'flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-all relative',
                 currentIndex === index ? 'border-primary-600' : 'border-transparent hover:border-secondary-300'
               )}
               aria-label={`Bild ${index + 1} anzeigen`}
             >
-              <div className="w-full h-full bg-secondary-100 flex items-center justify-center">
-                <span className="text-xs text-secondary-400">{index + 1}</span>
-              </div>
+              <Image
+                src={bild.url}
+                alt={bild.alt || `${titel} - Bild ${index + 1}`}
+                fill
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

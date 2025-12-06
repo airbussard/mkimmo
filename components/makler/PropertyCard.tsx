@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { MapPin, BedDouble, Maximize, Home } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -18,11 +19,23 @@ export function PropertyCard({ property }: PropertyCardProps) {
         ? 'warning'
         : 'secondary'
 
+  // Erstes Bild oder primäres Bild finden
+  const primaryImage = property.bilder.find(b => b.isPrimary) || property.bilder[0]
+
   return (
     <Link href={`/makler/${property.id}`}>
       <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-        <div className="relative">
-          <ImagePlaceholder aspectRatio="video" />
+        <div className="relative aspect-video">
+          {primaryImage ? (
+            <Image
+              src={primaryImage.url}
+              alt={primaryImage.alt || property.titel}
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <ImagePlaceholder aspectRatio="video" />
+          )}
           <div className="absolute top-3 left-3 flex gap-2">
             <Badge variant={statusVariant}>{PROPERTY_STATUS_NAMEN[property.status]}</Badge>
             {property.hervorgehoben && <Badge variant="default">Empfohlen</Badge>}
