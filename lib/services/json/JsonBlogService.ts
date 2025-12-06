@@ -1,5 +1,5 @@
 import { IBlogService } from '../interfaces/IBlogService'
-import { BlogPost } from '@/types/blog'
+import { BlogPost, BlogCategory } from '@/types/blog'
 import blogData from '@/data/blog.json'
 
 export class JsonBlogService implements IBlogService {
@@ -13,6 +13,10 @@ export class JsonBlogService implements IBlogService {
     return this.posts
   }
 
+  async getById(id: string): Promise<BlogPost | null> {
+    return this.posts.find((p) => p.id === id) || null
+  }
+
   async getBySlug(slug: string): Promise<BlogPost | null> {
     return this.posts.find((p) => p.slug === slug) || null
   }
@@ -21,5 +25,10 @@ export class JsonBlogService implements IBlogService {
     return this.posts
       .filter((p) => p.status === 'published')
       .sort((a, b) => new Date(b.erstelltAm).getTime() - new Date(a.erstelltAm).getTime())
+  }
+
+  async getCategories(): Promise<BlogCategory[]> {
+    // JSON hat keine Kategorien
+    return []
   }
 }
