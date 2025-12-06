@@ -88,7 +88,7 @@ export async function exportRechnerToPDF(options: PDFExportOptions): Promise<voi
     await new Promise<void>((resolve, reject) => {
       logoImg.onload = () => resolve()
       logoImg.onerror = () => reject(new Error('Logo konnte nicht geladen werden'))
-      logoImg.src = '/images/Logo MK Immobilien.png'
+      logoImg.src = '/images/logomk.png'
     })
 
     // Logo einfügen (proportional skaliert)

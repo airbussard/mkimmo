@@ -99,7 +99,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/images/Logo MK Immobilien.png"
+              src="/images/logomk.png"
               alt={COMPANY_INFO.name}
               width={360}
               height={80}

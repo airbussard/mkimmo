@@ -20,7 +20,8 @@
       "Bash(wc:*)",
       "Bash(head:*)",
       "Bash(curl:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []

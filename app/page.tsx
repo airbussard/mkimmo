@@ -9,7 +9,7 @@ export default function HomePage() {
       <section className="bg-gradient-to-b from-secondary-50 to-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <Image
-            src="/images/Logo MK Immobilien.png"
+            src="/images/logomk.png"
             alt={COMPANY_INFO.name}
             width={800}
             height={200}

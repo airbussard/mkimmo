@@ -41,7 +41,7 @@ export default function LoginPage() {
         <CardHeader className="text-center">
           <div className="flex justify-center mb-4">
             <Image
-              src="/images/Logo MK Immobilien.png"
+              src="/images/logomk.png"
               alt="MK Immobilien"
               width={200}
               height={45}
