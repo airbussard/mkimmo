@@ -1,8 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { Footer } from '@/components/layout/Footer'
-import { ConsentBanner } from '@/components/consent/ConsentBanner'
 import { COMPANY_INFO } from '@/config/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -49,11 +47,7 @@ export default function RootLayout({
   return (
     <html lang="de">
       <body className={inter.className}>
-        <div className="flex min-h-screen flex-col">
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </div>
-        <ConsentBanner />
+        {children}
       </body>
     </html>
   )
