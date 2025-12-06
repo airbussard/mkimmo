@@ -63,14 +63,14 @@ export async function PUT(request: NextRequest) {
     // Get current settings to check if password changed
     const currentSettings = await emailService.getSettings()
 
-    // Use existing password if not provided (masked value)
+    // Use existing password if not provided or masked
     const finalSmtpPassword =
-      smtpPassword === '********' && currentSettings
+      (!smtpPassword || smtpPassword === '********') && currentSettings
         ? currentSettings.smtpPassword
         : smtpPassword
 
     const finalImapPassword =
-      imapPassword === '********' && currentSettings
+      (!imapPassword || imapPassword === '********') && currentSettings
         ? currentSettings.imapPassword
         : imapPassword
 
