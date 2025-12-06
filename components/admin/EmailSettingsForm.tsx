@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Loader2, CheckCircle, XCircle, TestTube } from 'lucide-react'
+import { Save, Loader2, CheckCircle, XCircle, TestTube, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -43,6 +43,8 @@ export function EmailSettingsForm() {
   } | null>(null)
   const [saveSuccess, setSaveSuccess] = useState(false)
   const [error, setError] = useState('')
+  const [showSmtpPassword, setShowSmtpPassword] = useState(false)
+  const [showImapPassword, setShowImapPassword] = useState(false)
 
   useEffect(() => {
     fetchSettings()
@@ -195,13 +197,22 @@ export function EmailSettingsForm() {
               <label className="block text-sm font-medium text-secondary-700 mb-1">
                 Passwort
               </label>
-              <input
-                type="password"
-                value={settings.smtpPassword}
-                onChange={(e) => updateField('smtpPassword', e.target.value)}
-                className="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  type={showSmtpPassword ? 'text' : 'password'}
+                  value={settings.smtpPassword}
+                  onChange={(e) => updateField('smtpPassword', e.target.value)}
+                  className="w-full px-3 py-2 pr-10 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowSmtpPassword(!showSmtpPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-secondary-500 hover:text-secondary-700"
+                >
+                  {showSmtpPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
           </div>
           <div className="flex justify-end">
@@ -287,13 +298,22 @@ export function EmailSettingsForm() {
               <label className="block text-sm font-medium text-secondary-700 mb-1">
                 Passwort
               </label>
-              <input
-                type="password"
-                value={settings.imapPassword}
-                onChange={(e) => updateField('imapPassword', e.target.value)}
-                className="w-full px-3 py-2 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  type={showImapPassword ? 'text' : 'password'}
+                  value={settings.imapPassword}
+                  onChange={(e) => updateField('imapPassword', e.target.value)}
+                  className="w-full px-3 py-2 pr-10 border border-secondary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowImapPassword(!showImapPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-secondary-500 hover:text-secondary-700"
+                >
+                  {showImapPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
           </div>
           <div className="flex justify-end">
