@@ -64,8 +64,8 @@ const CHART_COLORS = {
   negative: '#ef4444',
 }
 
-// Farben für Kostenverteilung Pie-Chart (6 Farben für Zinsen, Tilgung, Instandhaltung, Verwaltung, Grundsteuer, Leerstand)
-const KOSTEN_COLORS = ['#ef4444', '#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd']
+// Farben für Kostenverteilung Pie-Chart (5 Farben für Zinsen, Tilgung, Instandhaltung, Verwaltung, Leerstand)
+const KOSTEN_COLORS = ['#ef4444', '#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa']
 
 // ==================== HELPER COMPONENTS ====================
 
@@ -165,8 +165,6 @@ export function MietrenditeRechner() {
   const [zinssatz, setZinssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.zinssatz).replace('.', ','))
   const [tilgungssatz, setTilgungssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.tilgungssatz).replace('.', ','))
 
-  const [grundsteuer, setGrundsteuer] = useState(DEFAULT_MIETRENDITE_EINGABEN.grundsteuerJaehrlich)
-
   // UI State
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
   const [zeigeCashflowPlan, setZeigeCashflowPlan] = useState(false)
@@ -205,7 +203,7 @@ export function MietrenditeRechner() {
       kredithoehe,
       zinssatz: parseDecimal(zinssatz),
       tilgungssatz: parseDecimal(tilgungssatz),
-      grundsteuerJaehrlich: grundsteuer,
+      grundsteuerJaehrlich: 0,
       afaSatz: 0,
       persoenlichSteuersatz: 0,
     }),
@@ -214,7 +212,6 @@ export function MietrenditeRechner() {
       instandhaltung, instandhaltungModus, kaltmiete, leerstandsquote,
       mietausfallwagnis, verwaltungskosten, verwaltungskostenModus,
       eigenkapital, kredithoehe, zinssatz, tilgungssatz,
-      grundsteuer,
     ]
   )
 
@@ -251,10 +248,9 @@ export function MietrenditeRechner() {
       { name: 'Tilgung', value: jahresTilgung },
       { name: 'Instandhaltung', value: ergebnis.instandhaltungAbsolut },
       { name: 'Verwaltung', value: ergebnis.verwaltungAbsolut },
-      { name: 'Grundsteuer', value: grundsteuer },
       { name: 'Leerstand/Ausfall', value: ergebnis.effektiverMietausfall },
     ].filter((item) => item.value > 0)
-  }, [ergebnis, grundsteuer, kredithoehe, zinssatz])
+  }, [ergebnis, kredithoehe, zinssatz])
 
   // Chart-Daten für Einnahmen vs Ausgaben (Bar)
   const einnahmenAusgabenData = useMemo(() => {
@@ -439,24 +435,6 @@ export function MietrenditeRechner() {
                     <SelectItem value="absolut">€/Jahr</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>
-                Grundsteuer (jährlich)
-                <InfoTooltip text="Die jährliche Grundsteuer für das Objekt." />
-              </Label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={grundsteuer > 0 ? grundsteuer.toLocaleString('de-DE') : ''}
-                  onChange={(e) => handleNumericInput(e.target.value, setGrundsteuer)}
-                  placeholder="0"
-                  className="pr-10"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">€</span>
               </div>
             </div>
           </CardContent>
@@ -747,10 +725,6 @@ export function MietrenditeRechner() {
                   <div className="flex justify-between">
                     <span>Verwaltung</span>
                     <span>{formatWaehrung(ergebnis.verwaltungAbsolut)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Grundsteuer</span>
-                    <span>{formatWaehrung(grundsteuer)}</span>
                   </div>
                   <div className="flex justify-between font-medium text-secondary-900 pt-1 border-t">
                     <span>Kosten gesamt</span>
