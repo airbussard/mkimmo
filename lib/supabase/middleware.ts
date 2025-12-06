@@ -32,12 +32,24 @@ export async function updateSession(request: NextRequest) {
   // Refresh session if expired
   const {
     data: { user },
+    error,
   } = await supabase.auth.getUser()
 
+  // Debug logging
+  console.log('[Admin Middleware]', {
+    pathname: request.nextUrl.pathname,
+    hasUser: !!user,
+    error: error?.message,
+  })
+
   // Protect admin routes
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    // Allow access to login page
-    if (request.nextUrl.pathname === '/admin/login') {
+  const pathname = request.nextUrl.pathname
+
+  if (pathname.startsWith('/admin')) {
+    // Allow access to login page (with or without trailing slash)
+    const isLoginPage = pathname === '/admin/login' || pathname === '/admin/login/'
+
+    if (isLoginPage) {
       // If already logged in, redirect to dashboard
       if (user) {
         return NextResponse.redirect(new URL('/admin', request.url))
@@ -47,7 +59,8 @@ export async function updateSession(request: NextRequest) {
 
     // Redirect to login if not authenticated
     if (!user) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
+      const loginUrl = new URL('/admin/login', request.url)
+      return NextResponse.redirect(loginUrl)
     }
   }
 

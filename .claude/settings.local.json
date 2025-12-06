@@ -22,7 +22,11 @@
       "Bash(curl:*)",
       "Bash(cat:*)",
       "Bash(grep:*)",
-      "Bash(caprover deploy:*)"
+      "Bash(caprover deploy:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(caprover api:*)",
+      "Bash(caprover logs:*)",
+      "Bash(caprover:*)"
     ],
     "deny": [],
     "ask": []
