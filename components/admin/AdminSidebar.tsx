@@ -58,6 +58,11 @@ const navigation = [
     ],
   },
   {
+    name: 'Benutzer',
+    href: '/admin/benutzer',
+    icon: Users,
+  },
+  {
     name: 'Einstellungen',
     href: '/admin/einstellungen',
     icon: Settings,
