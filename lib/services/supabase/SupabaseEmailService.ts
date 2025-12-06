@@ -249,6 +249,8 @@ export class SupabaseEmailService {
   async getPendingEmails(limit: number = 10): Promise<EmailQueueItem[]> {
     const supabase = this.getSupabase()
 
+    console.log('[EmailService] Fetching pending emails...')
+
     const { data, error } = await supabase
       .from('email_queue')
       .select('*')
@@ -258,7 +260,13 @@ export class SupabaseEmailService {
 
     if (error) {
       console.error('[EmailService] Error fetching pending emails:', error)
+      console.error('[EmailService] Error details:', JSON.stringify(error, null, 2))
       return []
+    }
+
+    console.log(`[EmailService] Found ${data?.length || 0} pending emails`)
+    if (data && data.length > 0) {
+      console.log('[EmailService] First pending email:', JSON.stringify(data[0], null, 2))
     }
 
     return (data || []).map(mapQueueRow)

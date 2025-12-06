@@ -7,6 +7,9 @@ export const maxDuration = 300 // 5 minutes
 
 export async function GET() {
   console.log('[Email Queue] Starting processing...')
+  console.log('[Email Queue] SUPABASE_URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+  console.log('[Email Queue] SERVICE_ROLE_KEY exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+  console.log('[Email Queue] SERVICE_ROLE_KEY length:', process.env.SUPABASE_SERVICE_ROLE_KEY?.length || 0)
 
   const emailService = new SupabaseEmailService()
 
