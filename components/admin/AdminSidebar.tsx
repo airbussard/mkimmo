@@ -110,7 +110,6 @@ export function AdminSidebar({ user }: AdminSidebarProps) {
             className="h-8 w-auto"
           />
         </Link>
-        <p className="text-xs text-secondary-500 mt-1">Admin-Bereich</p>
       </div>
 
       {/* Navigation */}
