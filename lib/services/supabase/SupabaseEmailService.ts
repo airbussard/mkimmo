@@ -281,12 +281,11 @@ export class SupabaseEmailService {
 
     console.log('[EmailService] Claiming pending emails...')
 
-    // Erst IDs der pending E-Mails holen (nur die, die noch nicht gesendet wurden)
+    // Nur E-Mails mit status='pending' holen
     const { data: pendingIds, error: selectError } = await supabase
       .from('email_queue')
       .select('id')
       .eq('status', 'pending')
-      .is('sent_at', null) // KRITISCH: Nur E-Mails ohne sent_at
       .order('created_at', { ascending: true })
       .limit(limit)
 
@@ -320,65 +319,6 @@ export class SupabaseEmailService {
     console.log(`[EmailService] Claimed ${data?.length || 0} emails for processing`)
 
     return (data || []).map(mapQueueRow)
-  }
-
-  /**
-   * Prüft ob eine E-Mail bereits gesendet wurde (sent_at ist gesetzt).
-   */
-  async isAlreadySent(id: string): Promise<boolean> {
-    const supabase = this.getSupabase()
-    const { data, error } = await supabase
-      .from('email_queue')
-      .select('sent_at, status')
-      .eq('id', id)
-      .single()
-
-    // Bei Fehler oder wenn E-Mail nicht gefunden: NICHT als gesendet behandeln
-    // (markAsSent() ist die echte Absicherung gegen Duplikate)
-    if (error || !data) {
-      console.log(`[EmailService] Could not check email ${id}, treating as not sent`)
-      return false
-    }
-
-    // Nur wenn sent_at explizit gesetzt ist ODER status 'sent' ist
-    const alreadySent = data.sent_at !== null || data.status === 'sent'
-    if (alreadySent) {
-      console.log(`[EmailService] Email ${id} already sent (sent_at: ${data.sent_at}, status: ${data.status})`)
-    }
-    return alreadySent
-  }
-
-  /**
-   * Markiert E-Mail als gesendet (atomar - nur wenn sent_at noch NULL ist).
-   */
-  async markAsSent(id: string): Promise<boolean> {
-    const supabase = this.getSupabase()
-    const now = new Date().toISOString()
-
-    const { data, error } = await supabase
-      .from('email_queue')
-      .update({
-        status: 'sent',
-        sent_at: now,
-        last_attempt_at: now,
-      })
-      .eq('id', id)
-      .is('sent_at', null) // KRITISCH: Nur wenn noch nicht gesendet!
-      .select()
-
-    if (error) {
-      console.error(`[EmailService] Error marking email ${id} as sent:`, error)
-      return false
-    }
-
-    // Wenn keine Zeile geupdated wurde, war sent_at bereits gesetzt
-    if (!data || data.length === 0) {
-      console.log(`[EmailService] Email ${id} was already marked as sent by another process`)
-      return false
-    }
-
-    console.log(`[EmailService] Email ${id} marked as sent`)
-    return true
   }
 
   async updateQueueStatus(

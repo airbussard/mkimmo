@@ -41,18 +41,8 @@ export async function GET() {
   let sent = 0
   let failed = 0
 
-  let skipped = 0
-
   for (const email of pendingEmails) {
     try {
-      // KRITISCH: Vor dem Senden prüfen, ob die E-Mail bereits gesendet wurde
-      const alreadySent = await emailService.isAlreadySent(email.id)
-      if (alreadySent) {
-        console.log(`[Email Queue] Email ${email.id} already sent, skipping`)
-        skipped++
-        continue
-      }
-
       const messageId = generateMessageId()
 
       const result = await sendEmail(settings, {
@@ -65,16 +55,12 @@ export async function GET() {
       })
 
       if (result.success) {
-        // Atomar als gesendet markieren (nur wenn sent_at noch NULL)
-        const marked = await emailService.markAsSent(email.id)
-        if (marked) {
-          sent++
-          console.log(`[Email Queue] Sent: ${email.subject} to ${email.recipientEmail}`)
-        } else {
-          // Wurde bereits von anderem Prozess gesendet
-          skipped++
-          console.log(`[Email Queue] Email ${email.id} was sent by another process`)
-        }
+        // Status auf 'sent' setzen
+        await emailService.updateQueueStatus(email.id, 'sent', {
+          sentAt: new Date().toISOString(),
+        })
+        sent++
+        console.log(`[Email Queue] Sent: ${email.subject} to ${email.recipientEmail}`)
       } else {
         // Check if max attempts reached
         if (email.attempts + 1 >= email.maxAttempts) {
@@ -109,13 +95,12 @@ export async function GET() {
     }
   }
 
-  console.log(`[Email Queue] Completed. Sent: ${sent}, Failed: ${failed}, Skipped: ${skipped}`)
+  console.log(`[Email Queue] Completed. Sent: ${sent}, Failed: ${failed}`)
 
   return NextResponse.json({
     success: true,
     processed: pendingEmails.length,
     sent,
     failed,
-    skipped,
   })
 }
