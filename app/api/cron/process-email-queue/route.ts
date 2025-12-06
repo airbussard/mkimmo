@@ -1,19 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { SupabaseEmailService } from '@/lib/services/supabase/SupabaseEmailService'
 import { sendEmail, generateMessageId } from '@/lib/email/mailer'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes
 
-export async function GET(request: NextRequest) {
-  // Verify cron secret
-  const { searchParams } = new URL(request.url)
-  const key = searchParams.get('key')
-
-  if (key !== process.env.CRON_SECRET) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
+export async function GET() {
   console.log('[Email Queue] Starting processing...')
 
   const emailService = new SupabaseEmailService()

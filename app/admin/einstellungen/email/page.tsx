@@ -55,16 +55,13 @@ export default function EmailSettingsPage() {
         <div className="space-y-2 font-mono text-xs bg-white p-3 rounded border">
           <p className="break-all">
             <span className="text-secondary-500">Queue:</span>{' '}
-            https://moellerknabe.de/api/cron/process-email-queue?key=CRON_SECRET
+            https://moellerknabe.de/api/cron/process-email-queue
           </p>
           <p className="break-all">
             <span className="text-secondary-500">Fetch:</span>{' '}
-            https://moellerknabe.de/api/cron/fetch-emails?key=CRON_SECRET
+            https://moellerknabe.de/api/cron/fetch-emails
           </p>
         </div>
-        <p className="text-xs text-secondary-500 mt-2">
-          Ersetzen Sie CRON_SECRET durch den Wert aus den Umgebungsvariablen.
-        </p>
       </div>
     </div>
   )
