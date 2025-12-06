@@ -43,11 +43,11 @@ export async function POST(
     }
 
     // Generate email content
-    const emailSubject = subject || `Re: Ihre Anfrage [ANFRAGE-${id}]`
+    const emailSubject = subject || `Re: Ihre Anfrage [ANFRAGE-${contactRequest.ticketNumber}]`
     const emailHtml = replyTemplate({
       recipientName: contactRequest.name,
       message: message.trim(),
-      requestId: id,
+      ticketNumber: contactRequest.ticketNumber,
       senderName: settings.fromName,
     })
 

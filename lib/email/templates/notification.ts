@@ -2,7 +2,7 @@ import { baseTemplate } from './base'
 import { CONTACT_REQUEST_TYPE_NAMEN, type ContactRequestType } from '@/types/contact'
 
 interface NotificationTemplateOptions {
-  requestId: string
+  ticketNumber: number
   requestType: ContactRequestType
   senderName: string
   senderEmail: string
@@ -13,7 +13,7 @@ interface NotificationTemplateOptions {
 
 export function notificationTemplate(options: NotificationTemplateOptions): string {
   const {
-    requestId,
+    ticketNumber,
     requestType,
     senderName,
     senderEmail,
@@ -73,7 +73,7 @@ export function notificationTemplate(options: NotificationTemplateOptions): stri
     </div>
 
     <p style="color: #9ca3af; font-size: 12px; text-align: center;">
-      Anfrage-ID: ${requestId}
+      Ticket-Nr.: ${ticketNumber}
     </p>
   `
 

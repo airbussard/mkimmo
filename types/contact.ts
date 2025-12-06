@@ -25,6 +25,7 @@ export const CONTACT_REQUEST_STATUS_NAMEN: Record<ContactRequestStatus, string> 
 
 export interface ContactRequest {
   id: string
+  ticketNumber: number
   type: ContactRequestType
   name: string
   email: string

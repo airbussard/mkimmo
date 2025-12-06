@@ -7,17 +7,19 @@ import { Button } from '@/components/ui/button'
 
 interface EmailReplyFormProps {
   requestId: string
+  ticketNumber: number
   recipientName: string
   recipientEmail: string
 }
 
 export function EmailReplyForm({
   requestId,
+  ticketNumber,
   recipientName,
   recipientEmail,
 }: EmailReplyFormProps) {
   const [message, setMessage] = useState('')
-  const [subject, setSubject] = useState(`Re: Ihre Anfrage [ANFRAGE-${requestId}]`)
+  const [subject, setSubject] = useState(`Re: Ihre Anfrage [ANFRAGE-${ticketNumber}]`)
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState('')

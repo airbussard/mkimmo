@@ -7,6 +7,7 @@ import {
 
 interface ContactRequestRow {
   id: string
+  ticket_number: number
   type: string
   name: string
   email: string
@@ -22,6 +23,7 @@ interface ContactRequestRow {
 function mapRowToRequest(row: ContactRequestRow): ContactRequest {
   return {
     id: row.id,
+    ticketNumber: row.ticket_number,
     type: row.type as ContactRequestType,
     name: row.name,
     email: row.email,
@@ -105,6 +107,22 @@ export class SupabaseContactService {
     }
 
     return (data || []).map(mapRowToRequest)
+  }
+
+  async getByTicketNumber(ticketNumber: number): Promise<ContactRequest | null> {
+    const supabase = this.getSupabase()
+    const { data, error } = await supabase
+      .from('contact_requests')
+      .select('*')
+      .eq('ticket_number', ticketNumber)
+      .single()
+
+    if (error || !data) {
+      console.error('Error fetching contact request by ticket number:', error)
+      return null
+    }
+
+    return mapRowToRequest(data)
   }
 
   async getNewCount(): Promise<number> {

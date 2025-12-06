@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { SupabaseEmailService } from '@/lib/services/supabase/SupabaseEmailService'
 import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
-import { fetchUnreadEmails, extractRequestIdFromSubject } from '@/lib/email/imap-client'
+import { fetchUnreadEmails, extractTicketNumberFromSubject } from '@/lib/email/imap-client'
 
 export const dynamic = 'force-dynamic'
 export const maxDuration = 300 // 5 minutes
@@ -43,17 +43,17 @@ export async function GET() {
 
     for (const email of emails) {
       try {
-        // Try to extract request ID from subject
-        const requestId = extractRequestIdFromSubject(email.subject)
+        // Try to extract ticket number from subject
+        const ticketNumber = extractTicketNumberFromSubject(email.subject)
 
-        if (requestId) {
+        if (ticketNumber) {
           // This is a reply to an existing request
-          const existingRequest = await contactService.getById(requestId)
+          const existingRequest = await contactService.getByTicketNumber(ticketNumber)
 
           if (existingRequest) {
             // Save as email message
             await emailService.createMessage({
-              contactRequestId: requestId,
+              contactRequestId: existingRequest.id,
               direction: 'incoming',
               fromEmail: email.from.email,
               fromName: email.from.name,
@@ -66,10 +66,10 @@ export async function GET() {
             })
 
             // Update request status to 'neu' (new message received)
-            await contactService.updateStatus(requestId, 'neu')
+            await contactService.updateStatus(existingRequest.id, 'neu')
 
             replies++
-            console.log(`[Email Fetch] Reply to request ${requestId}`)
+            console.log(`[Email Fetch] Reply to ticket #${ticketNumber}`)
           }
         } else {
           // New email - create a new contact request

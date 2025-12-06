@@ -164,10 +164,10 @@ export async function testImapConnection(settings: EmailSettings): Promise<{
   })
 }
 
-// Extrahiert Anfrage-ID aus Subject: [ANFRAGE-uuid]
-export function extractRequestIdFromSubject(subject: string): string | null {
-  const match = subject.match(/\[ANFRAGE-([a-f0-9-]+)\]/i)
-  return match ? match[1] : null
+// Extrahiert Ticket-Nummer aus Subject: [ANFRAGE-1234]
+export function extractTicketNumberFromSubject(subject: string): number | null {
+  const match = subject.match(/\[ANFRAGE-(\d+)\]/i)
+  return match ? parseInt(match[1], 10) : null
 }
 
 // Sanitize HTML content

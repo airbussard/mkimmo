@@ -395,7 +395,7 @@ export class SupabaseEmailService {
       const adminUrl = `${baseUrl}/admin/anfragen/${contactRequest.id}`
 
       const html = notificationTemplate({
-        requestId: contactRequest.id,
+        ticketNumber: contactRequest.ticketNumber,
         requestType: contactRequest.type,
         senderName: contactRequest.name,
         senderEmail: contactRequest.email,
@@ -426,5 +426,101 @@ export class SupabaseEmailService {
 
     console.log(`[EmailService] Queued ${queued} notification emails for request ${contactRequest.id}`)
     return queued
+  }
+
+  // ============================================
+  // Queue Management (Admin)
+  // ============================================
+
+  async getQueueStats(): Promise<{
+    total: number
+    pending: number
+    processing: number
+    sent: number
+    failed: number
+  }> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_queue')
+      .select('status')
+
+    if (error || !data) {
+      console.error('[EmailService] Error fetching queue stats:', error)
+      return { total: 0, pending: 0, processing: 0, sent: 0, failed: 0 }
+    }
+
+    return {
+      total: data.length,
+      pending: data.filter((d) => d.status === 'pending').length,
+      processing: data.filter((d) => d.status === 'processing').length,
+      sent: data.filter((d) => d.status === 'sent').length,
+      failed: data.filter((d) => d.status === 'failed').length,
+    }
+  }
+
+  async getQueueItems(filter?: {
+    status?: EmailQueueStatus
+    limit?: number
+  }): Promise<EmailQueueItem[]> {
+    const supabase = this.getSupabase()
+
+    let query = supabase
+      .from('email_queue')
+      .select('*')
+      .order('created_at', { ascending: false })
+
+    if (filter?.status) {
+      query = query.eq('status', filter.status)
+    }
+
+    if (filter?.limit) {
+      query = query.limit(filter.limit)
+    } else {
+      query = query.limit(100)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('[EmailService] Error fetching queue items:', error)
+      return []
+    }
+
+    return (data || []).map(mapQueueRow)
+  }
+
+  async retryQueueItem(id: string): Promise<boolean> {
+    const supabase = this.getSupabase()
+
+    const { error } = await supabase
+      .from('email_queue')
+      .update({
+        status: 'pending',
+        attempts: 0,
+        error_message: null,
+        last_attempt_at: null,
+      })
+      .eq('id', id)
+
+    if (error) {
+      console.error('[EmailService] Error retrying queue item:', error)
+      return false
+    }
+
+    return true
+  }
+
+  async deleteQueueItem(id: string): Promise<boolean> {
+    const supabase = this.getSupabase()
+
+    const { error } = await supabase.from('email_queue').delete().eq('id', id)
+
+    if (error) {
+      console.error('[EmailService] Error deleting queue item:', error)
+      return false
+    }
+
+    return true
   }
 }

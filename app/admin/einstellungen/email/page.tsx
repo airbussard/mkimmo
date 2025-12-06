@@ -1,27 +1,36 @@
 import Link from 'next/link'
-import { ArrowLeft, Mail } from 'lucide-react'
+import { ArrowLeft, Mail, Inbox } from 'lucide-react'
 import { EmailSettingsForm } from '@/components/admin/EmailSettingsForm'
 
 export default function EmailSettingsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4">
-        <Link
-          href="/admin/einstellungen"
-          className="p-2 hover:bg-secondary-100 rounded-lg transition-colors"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-secondary-900 flex items-center gap-2">
-            <Mail className="h-6 w-6 text-primary-600" />
-            E-Mail-Einstellungen
-          </h1>
-          <p className="text-secondary-600 mt-1">
-            Konfigurieren Sie SMTP und IMAP für den E-Mail-Versand und -Empfang
-          </p>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Link
+            href="/admin/einstellungen"
+            className="p-2 hover:bg-secondary-100 rounded-lg transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-secondary-900 flex items-center gap-2">
+              <Mail className="h-6 w-6 text-primary-600" />
+              E-Mail-Einstellungen
+            </h1>
+            <p className="text-secondary-600 mt-1">
+              Konfigurieren Sie SMTP und IMAP für den E-Mail-Versand und -Empfang
+            </p>
+          </div>
         </div>
+        <Link
+          href="/admin/einstellungen/email-queue"
+          className="flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          <Inbox className="h-4 w-4" />
+          Warteschlange
+        </Link>
       </div>
 
       {/* Info Box */}

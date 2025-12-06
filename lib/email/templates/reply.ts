@@ -3,12 +3,12 @@ import { baseTemplate } from './base'
 interface ReplyTemplateOptions {
   recipientName: string
   message: string
-  requestId: string
+  ticketNumber: number
   senderName?: string
 }
 
 export function replyTemplate(options: ReplyTemplateOptions): string {
-  const { recipientName, message, requestId, senderName } = options
+  const { recipientName, message, ticketNumber, senderName } = options
 
   // Formatiere Nachricht mit Zeilenumbrüchen
   const formattedMessage = message
@@ -31,7 +31,7 @@ export function replyTemplate(options: ReplyTemplateOptions): string {
     </p>
 
     <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">
-      Anfrage-Referenz: [ANFRAGE-${requestId}]<br>
+      Anfrage-Referenz: [ANFRAGE-${ticketNumber}]<br>
       Bitte beziehen Sie sich bei Rückfragen auf diese Referenz.
     </p>
   `
@@ -44,11 +44,11 @@ export function replyTemplate(options: ReplyTemplateOptions): string {
 interface ConfirmationTemplateOptions {
   name: string
   requestType: string
-  requestId: string
+  ticketNumber: number
 }
 
 export function confirmationTemplate(options: ConfirmationTemplateOptions): string {
-  const { name, requestType, requestId } = options
+  const { name, requestType, ticketNumber } = options
 
   const content = `
     <p>Guten Tag ${name},</p>
@@ -75,7 +75,7 @@ export function confirmationTemplate(options: ConfirmationTemplateOptions): stri
     </p>
 
     <p style="color: #9ca3af; font-size: 12px; margin-top: 24px;">
-      Anfrage-Referenz: [ANFRAGE-${requestId}]
+      Anfrage-Referenz: [ANFRAGE-${ticketNumber}]
     </p>
   `
 

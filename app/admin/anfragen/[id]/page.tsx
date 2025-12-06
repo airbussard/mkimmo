@@ -152,6 +152,7 @@ export default async function AnfrageDetailPage({ params }: PageProps) {
                 </h4>
                 <EmailReplyForm
                   requestId={request.id}
+                  ticketNumber={request.ticketNumber}
                   recipientName={request.name}
                   recipientEmail={request.email}
                 />
