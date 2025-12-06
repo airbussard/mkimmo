@@ -102,10 +102,10 @@ export default async function AnfrageDetailPage({ params }: PageProps) {
                 </dl>
 
                 {/* Link zur angefragten Immobilie */}
-                {request.type === 'makler_anfrage' && request.metadata?.propertyId && (
+                {request.type === 'makler_anfrage' && request.metadata?.propertyId ? (
                   <div className="pt-4 border-t">
                     <Link
-                      href={`/makler/${request.metadata.propertyId}`}
+                      href={`/makler/${String(request.metadata.propertyId)}`}
                       target="_blank"
                       className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                     >
@@ -113,7 +113,7 @@ export default async function AnfrageDetailPage({ params }: PageProps) {
                       Zur Immobilie: {String(request.metadata.propertyTitle || 'Ansehen')}
                     </Link>
                   </div>
-                )}
+                ) : null}
               </CardContent>
             </Card>
           )}
