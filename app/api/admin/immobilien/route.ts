@@ -28,38 +28,38 @@ function mapPropertyToRow(property: Record<string, unknown>) {
   const adresse = property.adresse as Record<string, unknown> | undefined
   if (adresse) {
     row.address = {
-      street: adresse.strasse,
-      houseNumber: adresse.hausnummer,
-      zip: adresse.plz,
-      city: adresse.ort,
-      bundesland: adresse.bundesland,
-      coordinates: adresse.koordinaten,
+      street: adresse.strasse ?? '',
+      houseNumber: adresse.hausnummer ?? '',
+      zip: adresse.plz ?? '',
+      city: adresse.ort ?? '',
+      bundesland: adresse.bundesland ?? 'nordrhein-westfalen',
+      coordinates: adresse.koordinaten ?? null,
     }
   }
 
   const details = property.details as Record<string, unknown> | undefined
-  if (details || property.preistyp || property.kurzBeschreibung) {
+  if (details || property.preistyp !== undefined || property.kurzBeschreibung !== undefined) {
     row.details = {
-      livingArea: details?.wohnflaeche,
-      plotArea: details?.grundstuecksflaeche,
-      rooms: details?.zimmer,
-      bedrooms: details?.schlafzimmer,
-      bathrooms: details?.badezimmer,
-      floor: details?.etage,
-      floors: details?.etagen,
-      yearBuilt: details?.baujahr,
-      lastRenovation: details?.letzteSanierung,
-      heating: details?.heizung,
-      energyCertificate: details?.energieausweis,
-      parkingSpaces: details?.stellplaetze,
-      balcony: details?.balkon,
-      terrace: details?.terrasse,
-      garden: details?.garten,
-      elevator: details?.aufzug,
-      basement: details?.keller,
-      furnished: details?.moebliert,
-      priceType: property.preistyp,
-      shortDescription: property.kurzBeschreibung,
+      livingArea: details?.wohnflaeche ?? 0,
+      plotArea: details?.grundstuecksflaeche ?? null,
+      rooms: details?.zimmer ?? 0,
+      bedrooms: details?.schlafzimmer ?? 0,
+      bathrooms: details?.badezimmer ?? 0,
+      floor: details?.etage ?? null,
+      floors: details?.etagen ?? null,
+      yearBuilt: details?.baujahr ?? null,
+      lastRenovation: details?.letzteSanierung ?? null,
+      heating: details?.heizung ?? 'gas',
+      energyCertificate: details?.energieausweis ?? null,
+      parkingSpaces: details?.stellplaetze ?? null,
+      balcony: details?.balkon ?? false,
+      terrace: details?.terrasse ?? false,
+      garden: details?.garten ?? false,
+      elevator: details?.aufzug ?? false,
+      basement: details?.keller ?? false,
+      furnished: details?.moebliert ?? false,
+      priceType: property.preistyp ?? 'kauf',
+      shortDescription: property.kurzBeschreibung ?? '',
     }
   }
 
