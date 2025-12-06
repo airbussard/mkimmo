@@ -1,3 +1,4 @@
+import { createAdminClient } from '@/lib/supabase/server'
 import { createClient } from '@/lib/supabase/server'
 import {
   Building2,
@@ -5,26 +6,34 @@ import {
   MessageSquare,
   Home,
   TrendingUp,
-  Users,
   Clock,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+async function getStats() {
+  const supabase = createAdminClient()
+
+  // Parallele Abfragen für Performance
+  const [propertiesRes, blogRes, requestsRes, managedRes] = await Promise.all([
+    supabase.from('properties').select('id', { count: 'exact', head: true }),
+    supabase.from('blog_posts').select('id', { count: 'exact', head: true }),
+    supabase.from('contact_requests').select('id', { count: 'exact', head: true }).eq('status', 'neu'),
+    supabase.from('managed_properties').select('id', { count: 'exact', head: true }),
+  ])
+
+  return {
+    immobilien: propertiesRes.count ?? 0,
+    blogPosts: blogRes.count ?? 0,
+    anfragen: requestsRes.count ?? 0,
+    hvObjekte: managedRes.count ?? 0,
+  }
+}
 
 export default async function AdminDashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // TODO: Echte Daten aus Supabase laden wenn Tabellen existieren
-  const stats = {
-    immobilien: 6,
-    blogPosts: 4,
-    anfragen: 0,
-    hvObjekte: 3,
-  }
-
-  const recentActivity = [
-    { type: 'info', message: 'Dashboard initialisiert', time: 'Gerade' },
-  ]
+  const stats = await getStats()
 
   return (
     <div className="space-y-6">
@@ -144,60 +153,24 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Recent Activity */}
+        {/* Statistik-Hinweis */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Clock className="h-5 w-5 text-primary-600" />
-              Letzte Aktivitäten
+              Statistiken
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {recentActivity.length === 0 ? (
-              <p className="text-sm text-secondary-500 text-center py-4">
-                Keine aktuellen Aktivitäten
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {recentActivity.map((activity, index) => (
-                  <div
-                    key={index}
-                    className="flex items-start gap-3 p-3 rounded-lg bg-secondary-50"
-                  >
-                    <div className="h-2 w-2 rounded-full bg-primary-500 mt-2" />
-                    <div className="flex-1">
-                      <p className="text-sm text-secondary-900">
-                        {activity.message}
-                      </p>
-                      <p className="text-xs text-secondary-500 mt-1">
-                        {activity.time}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
+            <div className="space-y-2 text-sm text-secondary-600">
+              <p><strong>{stats.immobilien}</strong> Immobilien im Portfolio</p>
+              <p><strong>{stats.blogPosts}</strong> Blog-Artikel veröffentlicht</p>
+              <p><strong>{stats.anfragen}</strong> neue Anfragen zu bearbeiten</p>
+              <p><strong>{stats.hvObjekte}</strong> Objekte in der Hausverwaltung</p>
+            </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Info Box */}
-      <Card className="border-blue-200 bg-blue-50">
-        <CardContent className="p-6">
-          <div className="flex items-start gap-4">
-            <div className="p-2 rounded-lg bg-blue-100">
-              <Users className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <h3 className="font-medium text-blue-900">Phase 1 abgeschlossen</h3>
-              <p className="text-sm text-blue-700 mt-1">
-                Admin-Authentifizierung ist eingerichtet. Als nächstes: Datenbank-Tabellen
-                in Supabase anlegen und Immobilien-Verwaltung implementieren (Phase 2).
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   )
 }
