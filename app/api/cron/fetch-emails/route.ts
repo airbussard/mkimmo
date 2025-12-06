@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { SupabaseEmailService } from '@/lib/services/supabase/SupabaseEmailService'
 import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
+import { SupabaseUserService } from '@/lib/services/supabase/SupabaseUserService'
 import { fetchUnreadEmails, extractTicketNumberFromSubject } from '@/lib/email/imap-client'
 
 export const dynamic = 'force-dynamic'
@@ -11,6 +12,7 @@ export async function GET() {
 
   const emailService = new SupabaseEmailService()
   const contactService = new SupabaseContactService()
+  const userService = new SupabaseUserService()
 
   // Get email settings
   const settings = await emailService.getSettings()
@@ -97,6 +99,17 @@ export async function GET() {
               contentText: email.contentText,
               messageId: email.messageId,
             })
+
+            // Send notification emails to active users
+            try {
+              const activeUsers = await userService.getActiveUsers()
+              if (activeUsers.length > 0) {
+                const queued = await emailService.queueNotificationEmails(newRequest, activeUsers)
+                console.log(`[Email Fetch] Queued ${queued} notification emails`)
+              }
+            } catch (notifyError) {
+              console.error('[Email Fetch] Error queuing notifications:', notifyError)
+            }
 
             newRequests++
             console.log(`[Email Fetch] New request from ${email.from.email}`)
