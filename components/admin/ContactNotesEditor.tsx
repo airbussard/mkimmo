@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Save, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
 
 interface ContactNotesEditorProps {
   requestId: string
@@ -23,10 +22,13 @@ export function ContactNotesEditor({
     setSaved(false)
 
     try {
-      const contactService = new SupabaseContactService()
-      const success = await contactService.updateNotes(requestId, notes)
+      const response = await fetch(`/api/admin/anfragen/${requestId}/notes`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes }),
+      })
 
-      if (success) {
+      if (response.ok) {
         setSaved(true)
         setTimeout(() => setSaved(false), 2000)
       }

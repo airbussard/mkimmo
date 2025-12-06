@@ -384,3 +384,4 @@ const Map = dynamic(() => import('./PropertyMap'), { ssr: false })
 - [ ] Admin-Bereich für Objektverwaltung
 - [ ] Favoritenliste für Besucher
 - [ ] PDF-Export für Exposés
+- bitte auf github committen
