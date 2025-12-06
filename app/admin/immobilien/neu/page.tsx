@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { PropertyForm } from '@/components/admin/PropertyForm'
 
 export default function NeueImmobiliePage() {
