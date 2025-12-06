@@ -327,15 +327,23 @@ export class SupabaseEmailService {
    */
   async isAlreadySent(id: string): Promise<boolean> {
     const supabase = this.getSupabase()
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('email_queue')
       .select('sent_at, status')
       .eq('id', id)
       .single()
 
-    const alreadySent = data?.sent_at !== null || data?.status === 'sent'
+    // Bei Fehler oder wenn E-Mail nicht gefunden: NICHT als gesendet behandeln
+    // (markAsSent() ist die echte Absicherung gegen Duplikate)
+    if (error || !data) {
+      console.log(`[EmailService] Could not check email ${id}, treating as not sent`)
+      return false
+    }
+
+    // Nur wenn sent_at explizit gesetzt ist ODER status 'sent' ist
+    const alreadySent = data.sent_at !== null || data.status === 'sent'
     if (alreadySent) {
-      console.log(`[EmailService] Email ${id} already sent (sent_at: ${data?.sent_at}, status: ${data?.status})`)
+      console.log(`[EmailService] Email ${id} already sent (sent_at: ${data.sent_at}, status: ${data.status})`)
     }
     return alreadySent
   }
