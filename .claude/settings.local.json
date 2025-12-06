@@ -21,7 +21,8 @@
       "Bash(head:*)",
       "Bash(curl:*)",
       "Bash(cat:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(caprover deploy:*)"
     ],
     "deny": [],
     "ask": []

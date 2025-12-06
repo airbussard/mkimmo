@@ -17,12 +17,20 @@
 ### Deployment
 
 - **Plattform**: CapRover (Docker)
-- **Build-Trigger**: Webhook nach jedem Push
+- **URL**: https://moellerknabe.de
+- **Dashboard**: https://captain.immogear.de
+
+**WICHTIG: Nach JEDER Änderung (commit + push) automatisch deployen:**
 
 ```bash
 # Build triggern nach Änderungen
 curl -X POST "https://captain.immogear.de/api/v2/user/apps/webhooks/triggerbuild?namespace=captain&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InRva2VuVmVyc2lvbiI6ImFkYjlmMDNmLTM5ZWYtNDU0MS05NjEyLWQ5MDQxODEyZWQ0YiIsImFwcE5hbWUiOiJta2ltbW8iLCJuYW1lc3BhY2UiOiJjYXB0YWluIn0sImlhdCI6MTc2NDkyNzMxOH0.yZz3O-rvoXjs1ae7-o6L6nScK5BKHtLhz4-qao1N2wE"
 ```
+
+**Workflow nach Änderungen:**
+1. `git add -A && git commit -m "..."`
+2. `git push origin main`
+3. CapRover Build triggern (curl oben)
 
 ---
 
@@ -90,7 +98,7 @@ mkimmo/
 │   └── consent.ts               # Consent-Types
 └── public/
     └── images/                  # Statische Bilder
-        └── Logo MK Immobilien.png
+        └── logomk.png           # Firmenlogo
 ```
 
 ---
