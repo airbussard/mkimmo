@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PropertyGallery } from '@/components/makler/PropertyGallery'
+import { PropertyInquiryForm } from '@/components/makler/PropertyInquiryForm'
 import { PropertyMap } from '@/components/shared/PropertyMap'
 import { serviceFactory } from '@/lib/services/ServiceFactory'
 import {
@@ -292,11 +293,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </div>
 
               <div className="space-y-3 mb-6">
-                <Button className="w-full" size="lg" asChild>
-                  <a href={`mailto:${COMPANY_INFO.email}?subject=Anfrage: ${property.titel}`}>
-                    Anfrage senden
-                  </a>
-                </Button>
                 <Button variant="outline" className="w-full" asChild>
                   <a href={`tel:${COMPANY_INFO.telefon}`}>Anrufen</a>
                 </Button>
@@ -309,6 +305,9 @@ export default async function PropertyDetailPage({ params }: PageProps) {
               </div>
             </CardContent>
           </Card>
+
+          {/* Anfrage-Formular */}
+          <PropertyInquiryForm propertyId={property.id} propertyTitle={property.titel} />
 
           {/* Kaufnebenkosten-Rechner Link */}
           {property.preistyp === 'kauf' && (

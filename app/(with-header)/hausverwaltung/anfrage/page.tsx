@@ -29,15 +29,41 @@ export default function AnfragePage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
+  const [error, setError] = useState<string | null>(null)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setError(null)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'hv_anfrage',
+          name: formData.name,
+          email: formData.email,
+          phone: formData.telefon || undefined,
+          message: formData.nachricht || undefined,
+          metadata: {
+            objektart: formData.objektart || undefined,
+            einheiten: formData.einheiten ? parseInt(formData.einheiten) : undefined,
+          },
+        }),
+      })
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Fehler beim Senden')
+      }
+
+      setIsSubmitted(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   if (isSubmitted) {
@@ -194,6 +220,13 @@ export default function AnfragePage() {
                   zu. <span className="text-red-500">*</span>
                 </Label>
               </div>
+
+              {/* Fehlermeldung */}
+              {error && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
 
               {/* Submit Button */}
               <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
