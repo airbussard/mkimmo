@@ -26,7 +26,8 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(caprover api:*)",
       "Bash(caprover logs:*)",
-      "Bash(caprover:*)"
+      "Bash(caprover:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

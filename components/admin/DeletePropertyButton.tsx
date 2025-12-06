@@ -6,7 +6,6 @@ import { Trash2, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -15,7 +14,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { SupabasePropertyService } from '@/lib/services/supabase/SupabasePropertyService'
 
 interface DeletePropertyButtonProps {
   propertyId: string
@@ -33,14 +31,16 @@ export function DeletePropertyButton({
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const propertyService = new SupabasePropertyService()
-      const success = await propertyService.delete(propertyId)
+      const response = await fetch(`/api/admin/immobilien/${propertyId}`, {
+        method: 'DELETE',
+      })
 
-      if (success) {
+      if (response.ok) {
         setOpen(false)
         router.refresh()
       } else {
-        alert('Fehler beim Löschen der Immobilie')
+        const data = await response.json()
+        alert(data.error || 'Fehler beim Löschen der Immobilie')
       }
     } catch (error) {
       console.error('Delete error:', error)

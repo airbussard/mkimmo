@@ -17,7 +17,6 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { ImageUpload } from '@/components/admin/ImageUpload'
-import { SupabasePropertyService } from '@/lib/services/supabase/SupabasePropertyService'
 import {
   Property,
   PropertyType,
@@ -170,12 +169,19 @@ export function PropertyForm({ property, isEditing = false }: PropertyFormProps)
     setError('')
 
     try {
-      const propertyService = new SupabasePropertyService()
+      const url = isEditing && property
+        ? `/api/admin/immobilien/${property.id}`
+        : '/api/admin/immobilien'
 
-      if (isEditing && property) {
-        await propertyService.update(property.id, formData)
-      } else {
-        await propertyService.create(formData)
+      const response = await fetch(url, {
+        method: isEditing ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        throw new Error(data.error || 'Fehler beim Speichern')
       }
 
       router.push('/admin/immobilien')
