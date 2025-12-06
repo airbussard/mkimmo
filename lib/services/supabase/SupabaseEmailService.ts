@@ -292,13 +292,16 @@ export class SupabaseEmailService {
     if (selectError || !pendingIds || pendingIds.length === 0) {
       if (selectError) {
         console.error('[EmailService] Error selecting pending emails:', selectError)
+      } else {
+        console.log('[EmailService] No pending emails found')
       }
       return []
     }
 
     const ids = pendingIds.map((row) => row.id)
+    console.log(`[EmailService] Found ${ids.length} pending emails to claim:`, ids)
 
-    // Atomisch auf "processing" setzen und zurückgeben
+    // Update auf "processing" setzen und zurückgeben
     const { data, error } = await supabase
       .from('email_queue')
       .update({
@@ -306,7 +309,6 @@ export class SupabaseEmailService {
         last_attempt_at: new Date().toISOString(),
       })
       .in('id', ids)
-      .eq('status', 'pending') // Nur wenn noch pending (Race Condition Schutz)
       .select()
 
     if (error) {
