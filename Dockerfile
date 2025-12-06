@@ -16,7 +16,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build-Argumente für Umgebung
-ARG NEXT_PUBLIC_DATA_PROVIDER=json
+ARG NEXT_PUBLIC_DATA_PROVIDER=supabase
 ARG NEXT_PUBLIC_SUPABASE_URL
 ARG NEXT_PUBLIC_SUPABASE_ANON_KEY
 
