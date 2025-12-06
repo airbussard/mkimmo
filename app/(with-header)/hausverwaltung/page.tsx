@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Building2, FileText, Wrench, Users, Shield, Phone, Clock, CheckCircle, ArrowRight, Heart } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/config/navigation'
+import { HeroSlider, Slide } from '@/components/HeroSlider'
 
 export const metadata: Metadata = {
   title: 'Hausverwaltung',
@@ -10,33 +11,57 @@ export const metadata: Metadata = {
     'Professionelle Hausverwaltung in Eschweiler und Umgebung. Wir kümmern uns um Ihre Immobilie – von der Mieterbetreuung bis zur Instandhaltung.',
 }
 
+const hausverwaltungSlides: Slide[] = [
+  {
+    image: '/slider/IMG_5050.jpeg',
+    title: 'Professionelle Hausverwaltung',
+    subtitle: 'Wir verwalten Ihre Immobilie zuverlässig und kompetent',
+    cta: {
+      text: 'Anfrage stellen',
+      href: '/hausverwaltung/anfrage',
+      icon: <FileText className="w-5 h-5 mr-2" />,
+    },
+    ctaSecondary: {
+      text: 'Unsere Objekte',
+      href: '/hausverwaltung/objekte',
+    },
+  },
+  {
+    image: '/slider/IMG_3439.jpeg',
+    title: 'Zuverlässige Betreuung',
+    subtitle: 'Von der Nebenkostenabrechnung bis zur Instandhaltung – wir kümmern uns',
+    cta: {
+      text: 'Leistungen ansehen',
+      href: '#leistungen',
+    },
+    ctaSecondary: {
+      text: 'Kontakt aufnehmen',
+      href: '/hausverwaltung/kontakt',
+    },
+  },
+  {
+    image: '/slider/DSC_0065.JPG',
+    title: 'Erfahrung die zählt',
+    subtitle: 'Über 15 Jahre Erfahrung in der Immobilienverwaltung',
+    cta: {
+      text: 'Jetzt anfragen',
+      href: '/hausverwaltung/anfrage',
+    },
+    ctaSecondary: {
+      text: 'Anrufen',
+      href: `tel:${COMPANY_INFO.telefon}`,
+    },
+  },
+]
+
 export default function HausverwaltungLandingPage() {
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-secondary-50 to-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6">
-              Professionelle Hausverwaltung
-            </h1>
-            <p className="text-lg md:text-xl text-secondary-600 mb-8">
-              Wir verwalten Ihre Immobilie zuverlässig und kompetent. Von der
-              Mieterbetreuung über die Nebenkostenabrechnung bis zur Instandhaltung –
-              wir kümmern uns um alles.
-            </p>
-            <Button asChild size="lg">
-              <Link href="/hausverwaltung/anfrage">
-                <FileText className="w-5 h-5 mr-2" />
-                Jetzt Anfrage stellen
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </section>
+      {/* Hero Slider */}
+      <HeroSlider slides={hausverwaltungSlides} autoPlayInterval={6000} />
 
       {/* Leistungen Section */}
-      <section className="py-16 md:py-20">
+      <section id="leistungen" className="py-16 md:py-20">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl md:text-3xl font-bold text-center text-secondary-900 mb-12">
             Unsere Leistungen

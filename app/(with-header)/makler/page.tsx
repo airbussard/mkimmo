@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Home, TrendingUp, Users, Award, Clock, CheckCircle, ArrowRight, Calculator, Key } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/config/navigation'
+import { HeroSlider, Slide } from '@/components/HeroSlider'
 
 export const metadata: Metadata = {
   title: 'Makler',
@@ -10,38 +11,54 @@ export const metadata: Metadata = {
     'Ihr Immobilienmakler in Eschweiler und Umgebung. Professionelle Vermittlung von Häusern, Wohnungen und Grundstücken.',
 }
 
+const maklerSlides: Slide[] = [
+  {
+    image: '/slider/IMG_9794.JPG',
+    title: 'Ihr Immobilienpartner in Eschweiler',
+    subtitle: 'Professionelle Vermittlung von Häusern, Wohnungen und Grundstücken',
+    cta: {
+      text: 'Immobilien entdecken',
+      href: '/makler/immobilien',
+      icon: <Home className="w-5 h-5 mr-2" />,
+    },
+    ctaSecondary: {
+      text: 'Kaufnebenkosten berechnen',
+      href: '/makler/kaufnebenkosten-rechner',
+    },
+  },
+  {
+    image: '/slider/IMG_8492.JPG',
+    title: 'Persönliche Beratung',
+    subtitle: 'Individuelle Betreuung von der ersten Besichtigung bis zum Notartermin',
+    cta: {
+      text: 'Kontakt aufnehmen',
+      href: '/makler/kontakt',
+    },
+    ctaSecondary: {
+      text: 'Über uns',
+      href: '/makler/ueber-uns',
+    },
+  },
+  {
+    image: '/slider/2d8d1ebe-a84f-4ae5-822f-161412d2ed3b.jpg',
+    title: 'Lokale Expertise',
+    subtitle: 'Wir kennen den Immobilienmarkt in Eschweiler und der Städteregion Aachen',
+    cta: {
+      text: 'Immobilien kaufen',
+      href: '/makler/kaufen',
+    },
+    ctaSecondary: {
+      text: 'Immobilien mieten',
+      href: '/makler/mieten',
+    },
+  },
+]
+
 export default function MaklerLandingPage() {
   return (
     <div className="flex flex-col">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-b from-secondary-50 to-white py-16 md:py-24">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-3xl md:text-5xl font-bold text-secondary-900 mb-6">
-              Ihr Immobilienmakler in Eschweiler
-            </h1>
-            <p className="text-lg md:text-xl text-secondary-600 mb-8">
-              Wir begleiten Sie professionell beim Kauf oder Verkauf Ihrer Immobilie.
-              Mit lokaler Expertise und persönlicher Beratung finden wir gemeinsam
-              die perfekte Lösung für Sie.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button asChild size="lg">
-                <Link href="/makler/immobilien">
-                  <Home className="w-5 h-5 mr-2" />
-                  Immobilien entdecken
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/makler/kaufnebenkosten-rechner">
-                  <Calculator className="w-5 h-5 mr-2" />
-                  Kaufnebenkosten berechnen
-                </Link>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Hero Slider */}
+      <HeroSlider slides={maklerSlides} autoPlayInterval={6000} />
 
       {/* Leistungen Section */}
       <section className="py-16 md:py-20">
