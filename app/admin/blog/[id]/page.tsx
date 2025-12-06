@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from 'next/navigation'
 import { BlogEditor } from '@/components/admin/BlogEditor'
 import { SupabaseBlogService } from '@/lib/services/supabase/SupabaseBlogService'

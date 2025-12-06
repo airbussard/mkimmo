@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import Link from 'next/link'
 import { Plus, FileText, Pencil, Trash2, Eye, Tag } from 'lucide-react'
 import { Button } from '@/components/ui/button'

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { BlogEditor } from '@/components/admin/BlogEditor'
 import { SupabaseBlogService } from '@/lib/services/supabase/SupabaseBlogService'
 
