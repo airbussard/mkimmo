@@ -1,4 +1,4 @@
-import { createClient as createBrowserClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   Property,
   PropertyFilters,
@@ -170,8 +170,7 @@ function mapPropertyToRow(property: Partial<Property>): Partial<PropertyRow> {
 
 export class SupabasePropertyService implements IPropertyService {
   private getSupabase() {
-    // Use browser client - works on both client and server with SSR
-    return createBrowserClient()
+    return createAdminClient()
   }
 
   async getAll(): Promise<Property[]> {

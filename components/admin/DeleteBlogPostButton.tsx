@@ -14,7 +14,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { SupabaseBlogService } from '@/lib/services/supabase/SupabaseBlogService'
 
 interface DeleteBlogPostButtonProps {
   postId: string
@@ -32,10 +31,11 @@ export function DeleteBlogPostButton({
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const blogService = new SupabaseBlogService()
-      const success = await blogService.delete(postId)
+      const res = await fetch(`/api/admin/blog/${postId}`, {
+        method: 'DELETE',
+      })
 
-      if (success) {
+      if (res.ok) {
         setOpen(false)
         router.refresh()
       } else {

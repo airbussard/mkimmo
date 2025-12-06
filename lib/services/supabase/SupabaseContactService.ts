@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   ContactRequest,
   ContactRequestType,
@@ -37,7 +37,7 @@ function mapRowToRequest(row: ContactRequestRow): ContactRequest {
 
 export class SupabaseContactService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   // ============================================

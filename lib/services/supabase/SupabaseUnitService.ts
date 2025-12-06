@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   Unit,
   UnitType,
@@ -195,7 +195,7 @@ function mapTenantToRow(tenant: Partial<Tenant>): Record<string, unknown> {
 
 export class SupabaseUnitService implements IUnitService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   async getAll(): Promise<Unit[]> {
@@ -322,7 +322,7 @@ export class SupabaseUnitService implements IUnitService {
 
 export class SupabaseTenantService implements ITenantService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   async getById(id: string): Promise<Tenant | null> {

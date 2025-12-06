@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { BlogPost, BlogCategory, BlogPostStatus } from '@/types/blog'
 import { IBlogService } from '../interfaces/IBlogService'
 
@@ -82,7 +82,7 @@ function mapPostToRow(post: Partial<BlogPost>): Record<string, unknown> {
 
 export class SupabaseBlogService implements IBlogService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   // ============================================

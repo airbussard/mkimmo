@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 import {
   ManagedProperty,
   ManagedPropertyAddress,
@@ -130,7 +130,7 @@ function mapManagedPropertyToRow(property: Partial<ManagedProperty>): Record<str
 
 export class SupabaseManagedPropertyService implements IManagedPropertyService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   async getAll(): Promise<ManagedProperty[]> {

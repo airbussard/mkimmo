@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/client'
+import { createAdminClient } from '@/lib/supabase/admin'
 
 // ============================================
 // Company Info Types
@@ -106,7 +106,7 @@ function mapRowToTaxRate(row: TaxRateRow): TaxRate {
 
 export class SupabaseCompanyService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   async get(): Promise<CompanyInfo | null> {
@@ -193,7 +193,7 @@ export class SupabaseCompanyService {
 
 export class SupabaseTaxRateService {
   private getSupabase() {
-    return createClient()
+    return createAdminClient()
   }
 
   async getAll(): Promise<TaxRate[]> {
