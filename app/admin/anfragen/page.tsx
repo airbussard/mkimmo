@@ -1,13 +1,13 @@
 import Link from 'next/link'
-import { MessageSquare, Eye, Trash2, Mail, Phone, Clock } from 'lucide-react'
+import { MessageSquare, Eye, Mail, Phone, Clock } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
 import {
   CONTACT_REQUEST_TYPE_NAMEN,
-  CONTACT_REQUEST_STATUS_NAMEN,
 } from '@/types/contact'
 import { DeleteContactRequestButton } from '@/components/admin/DeleteContactRequestButton'
 import { ContactStatusSelect } from '@/components/admin/ContactStatusSelect'
+import { ClickableTableRow } from '@/components/admin/ClickableTableRow'
 
 function getStatusColor(status: string): string {
   switch (status) {
@@ -141,8 +141,9 @@ export default async function AdminAnfragenPage() {
                 </thead>
                 <tbody>
                   {requests.map((request) => (
-                    <tr
+                    <ClickableTableRow
                       key={request.id}
+                      href={`/admin/anfragen/${request.id}`}
                       className={`border-b border-secondary-100 hover:bg-secondary-50 ${
                         request.status === 'neu' ? 'bg-blue-50/50' : ''
                       }`}
@@ -206,7 +207,7 @@ export default async function AdminAnfragenPage() {
                           />
                         </div>
                       </td>
-                    </tr>
+                    </ClickableTableRow>
                   ))}
                 </tbody>
               </table>

@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
 import {
   ContactRequestStatus,
   CONTACT_REQUEST_STATUS_NAMEN,
@@ -46,10 +45,13 @@ export function ContactStatusSelect({
 
     setLoading(true)
     try {
-      const contactService = new SupabaseContactService()
-      const success = await contactService.updateStatus(requestId, newStatus)
+      const response = await fetch(`/api/admin/anfragen/${requestId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      })
 
-      if (success) {
+      if (response.ok) {
         setStatus(newStatus)
         router.refresh()
       }
