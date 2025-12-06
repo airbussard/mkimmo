@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { SupabaseBlogService } from '@/lib/services/supabase/SupabaseBlogService'
 import { createClient } from '@/lib/supabase/client'
 import {
   BlogPost,
@@ -141,12 +140,21 @@ export function BlogEditor({ post, categories, isEditing = false }: BlogEditorPr
     setError('')
 
     try {
-      const blogService = new SupabaseBlogService()
+      const url = isEditing && post
+        ? `/api/admin/blog/${post.id}`
+        : '/api/admin/blog'
 
-      if (isEditing && post) {
-        await blogService.update(post.id, formData)
-      } else {
-        await blogService.create(formData)
+      const method = isEditing ? 'PUT' : 'POST'
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Fehler beim Speichern')
       }
 
       router.push('/admin/blog')
