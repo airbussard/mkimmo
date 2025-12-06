@@ -23,8 +23,9 @@ export async function GET() {
     })
   }
 
-  // Get pending emails (max 10 per run)
-  const pendingEmails = await emailService.getPendingEmails(10)
+  // Atomisch pending E-Mails holen und als "processing" markieren
+  // Das verhindert Race Conditions bei parallelen Cron-Job-Aufrufen
+  const pendingEmails = await emailService.claimPendingEmails(10)
 
   if (pendingEmails.length === 0) {
     console.log('[Email Queue] No pending emails')
@@ -41,9 +42,6 @@ export async function GET() {
   let failed = 0
 
   for (const email of pendingEmails) {
-    // Mark as processing
-    await emailService.updateQueueStatus(email.id, 'processing')
-
     try {
       const messageId = generateMessageId()
 

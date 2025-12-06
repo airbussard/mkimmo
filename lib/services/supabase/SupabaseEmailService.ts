@@ -272,6 +272,53 @@ export class SupabaseEmailService {
     return (data || []).map(mapQueueRow)
   }
 
+  /**
+   * Atomisch pending E-Mails abrufen und als "processing" markieren.
+   * Verhindert Race Conditions bei parallelen Cron-Job-Aufrufen.
+   */
+  async claimPendingEmails(limit: number = 10): Promise<EmailQueueItem[]> {
+    const supabase = this.getSupabase()
+
+    console.log('[EmailService] Claiming pending emails...')
+
+    // Erst IDs der pending E-Mails holen
+    const { data: pendingIds, error: selectError } = await supabase
+      .from('email_queue')
+      .select('id')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .limit(limit)
+
+    if (selectError || !pendingIds || pendingIds.length === 0) {
+      if (selectError) {
+        console.error('[EmailService] Error selecting pending emails:', selectError)
+      }
+      return []
+    }
+
+    const ids = pendingIds.map((row) => row.id)
+
+    // Atomisch auf "processing" setzen und zurückgeben
+    const { data, error } = await supabase
+      .from('email_queue')
+      .update({
+        status: 'processing',
+        last_attempt_at: new Date().toISOString(),
+      })
+      .in('id', ids)
+      .eq('status', 'pending') // Nur wenn noch pending (Race Condition Schutz)
+      .select()
+
+    if (error) {
+      console.error('[EmailService] Error claiming emails:', error)
+      return []
+    }
+
+    console.log(`[EmailService] Claimed ${data?.length || 0} emails for processing`)
+
+    return (data || []).map(mapQueueRow)
+  }
+
   async updateQueueStatus(
     id: string,
     status: EmailQueueStatus,
@@ -400,6 +447,23 @@ export class SupabaseEmailService {
     let queued = 0
 
     for (const recipient of recipients) {
+      // Duplikat-Prüfung: Bereits eine pending/processing Notification für diese Anfrage + Empfänger?
+      const { data: existing } = await supabase
+        .from('email_queue')
+        .select('id')
+        .eq('contact_request_id', contactRequest.id)
+        .eq('recipient_email', recipient.email)
+        .eq('type', 'notification')
+        .in('status', ['pending', 'processing'])
+        .limit(1)
+
+      if (existing && existing.length > 0) {
+        console.log(
+          `[EmailService] Notification already queued for ${recipient.email}, skipping`
+        )
+        continue
+      }
+
       const adminUrl = `${baseUrl}/admin/anfragen/${contactRequest.id}`
 
       const html = notificationTemplate({
