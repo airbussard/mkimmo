@@ -224,7 +224,7 @@ export default function MaklerLandingPage() {
               asChild
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white hover:text-primary-600"
+              className="border-white text-white hover:bg-white/10 bg-transparent"
             >
               <Link href="/makler/kontakt">Kontakt aufnehmen</Link>
             </Button>
