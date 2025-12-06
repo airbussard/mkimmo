@@ -12,9 +12,6 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
-  PieChart,
-  Pie,
-  Cell,
 } from 'recharts'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -152,14 +149,6 @@ export function AnnuitaetenRechner() {
     }))
   }, [jahresZusammenfassung])
 
-  // Daten für den Pie-Chart (Ratenaufteilung)
-  const pieChartData = useMemo(() => {
-    if (!ergebnis) return []
-    return [
-      { name: 'Zinsanteil', value: ergebnis.anfaenglicheZinsrate, color: CHART_COLORS.zinsen },
-      { name: 'Tilgungsanteil', value: ergebnis.anfaenglicheTilgungsrate, color: CHART_COLORS.tilgung },
-    ]
-  }, [ergebnis])
 
   // PDF-Export Handler
   const handleExportPDF = async () => {
@@ -482,7 +471,7 @@ export function AnnuitaetenRechner() {
                   Grafische Auswertung
                 </CardTitle>
                 <CardDescription>
-                  Tilgungsverlauf und Ratenaufteilung
+                  Tilgungsverlauf über die Laufzeit
                 </CardDescription>
               </div>
               <Button onClick={handleExportPDF} variant="outline">
@@ -492,50 +481,9 @@ export function AnnuitaetenRechner() {
             </div>
           </CardHeader>
           <CardContent>
-            <div ref={chartRef} className="space-y-8">
-              {/* Pie-Chart: Ratenaufteilung */}
-              <div>
-                <h4 className="font-semibold text-secondary-900 mb-4">Anfängliche Ratenaufteilung</h4>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={pieChartData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={50}
-                        outerRadius={80}
-                        paddingAngle={2}
-                        dataKey="value"
-                        label={({ name, percent }) => `${name}: ${((percent ?? 0) * 100).toFixed(1)}%`}
-                        labelLine={true}
-                      >
-                        {pieChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <Tooltip
-                        formatter={(value: number) => formatWaehrung(value)}
-                        contentStyle={{
-                          backgroundColor: 'white',
-                          border: '1px solid #e5e7eb',
-                          borderRadius: '8px',
-                          boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
-                        }}
-                      />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={36}
-                        formatter={(value) => <span className="text-sm">{value}</span>}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
+            <div ref={chartRef}>
               {/* Area-Chart: Tilgungsverlauf */}
               <div>
-                <h4 className="font-semibold text-secondary-900 mb-4">Tilgungsverlauf über die Laufzeit</h4>
                 <div className="h-80 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart

@@ -29,8 +29,8 @@ import { GRUNDERWERBSTEUER } from '@/config/tax-rates'
 import { formatCurrency } from '@/lib/utils'
 import { exportRechnerToPDF, formatWaehrungFuerPDF, formatProzentFuerPDF, type PDFErgebnis } from '@/lib/utils/pdf-export'
 
-// Chart Farben
-const CHART_COLORS = ['#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa']
+// Chart Farben (Kaufpreis grün, dann blau-Töne für Nebenkosten)
+const CHART_COLORS = ['#22c55e', '#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa']
 
 export function KaufnebenkostenRechner() {
   const searchParams = useSearchParams()
@@ -53,10 +53,11 @@ export function KaufnebenkostenRechner() {
     })
   }, [kaufpreis, bundesland, mitMakler])
 
-  // Chart-Daten für Donut-Chart
+  // Chart-Daten für Donut-Chart (inkl. Kaufpreis)
   const chartData = useMemo(() => {
     if (!ergebnis) return []
     const data = [
+      { name: 'Kaufpreis', value: kaufpreis },
       { name: 'Grunderwerbsteuer', value: ergebnis.grunderwerbsteuer },
       { name: 'Notarkosten', value: ergebnis.notarkosten },
       { name: 'Grundbuchkosten', value: ergebnis.grundbuchkosten },
@@ -65,7 +66,7 @@ export function KaufnebenkostenRechner() {
       data.push({ name: 'Maklerprovision', value: ergebnis.maklerprovision })
     }
     return data
-  }, [ergebnis, mitMakler])
+  }, [ergebnis, mitMakler, kaufpreis])
 
   const handleKaufpreisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/[^0-9]/g, '')

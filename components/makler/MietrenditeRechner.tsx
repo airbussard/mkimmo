@@ -14,7 +14,6 @@ import {
   PiggyBank,
   Calendar,
   Home,
-  FileText,
   Download,
   BarChart3,
 } from 'lucide-react'
@@ -64,6 +63,9 @@ const CHART_COLORS = {
   positive: '#22c55e',
   negative: '#ef4444',
 }
+
+// Farben für Kostenverteilung Pie-Chart (6 Farben für Zinsen, Tilgung, Instandhaltung, Verwaltung, Grundsteuer, Leerstand)
+const KOSTEN_COLORS = ['#ef4444', '#1e3a5f', '#2563eb', '#3b82f6', '#60a5fa', '#93c5fd']
 
 // ==================== HELPER COMPONENTS ====================
 
@@ -164,8 +166,6 @@ export function MietrenditeRechner() {
   const [tilgungssatz, setTilgungssatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.tilgungssatz).replace('.', ','))
 
   const [grundsteuer, setGrundsteuer] = useState(DEFAULT_MIETRENDITE_EINGABEN.grundsteuerJaehrlich)
-  const [afaSatz, setAfaSatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.afaSatz).replace('.', ','))
-  const [steuersatz, setSteuersatz] = useState(String(DEFAULT_MIETRENDITE_EINGABEN.persoenlichSteuersatz).replace('.', ','))
 
   // UI State
   const [zeigeTilgungsplan, setZeigeTilgungsplan] = useState(false)
@@ -206,15 +206,15 @@ export function MietrenditeRechner() {
       zinssatz: parseDecimal(zinssatz),
       tilgungssatz: parseDecimal(tilgungssatz),
       grundsteuerJaehrlich: grundsteuer,
-      afaSatz: parseDecimal(afaSatz),
-      persoenlichSteuersatz: parseDecimal(steuersatz),
+      afaSatz: 0,
+      persoenlichSteuersatz: 0,
     }),
     [
       kaufpreis, kaufnebenkosten, kaufnebenkostenModus, sanierungskosten,
       instandhaltung, instandhaltungModus, kaltmiete, leerstandsquote,
       mietausfallwagnis, verwaltungskosten, verwaltungskostenModus,
       eigenkapital, kredithoehe, zinssatz, tilgungssatz,
-      grundsteuer, afaSatz, steuersatz,
+      grundsteuer,
     ]
   )
 
@@ -240,15 +240,21 @@ export function MietrenditeRechner() {
     }))
   }, [eingaben])
 
-  // Chart-Daten für Kostenverteilung (Pie)
+  // Chart-Daten für Kostenverteilung (Pie) - inkl. Zins und Tilgung
   const kostenPieData = useMemo(() => {
+    // Zins und Tilgung aus dem ersten Jahr berechnen
+    const jahresZins = kredithoehe * (parseDecimal(zinssatz) / 100)
+    const jahresTilgung = ergebnis.kapitaldienstJaehrlich - jahresZins
+
     return [
+      { name: 'Zinsen', value: jahresZins },
+      { name: 'Tilgung', value: jahresTilgung },
       { name: 'Instandhaltung', value: ergebnis.instandhaltungAbsolut },
       { name: 'Verwaltung', value: ergebnis.verwaltungAbsolut },
       { name: 'Grundsteuer', value: grundsteuer },
       { name: 'Leerstand/Ausfall', value: ergebnis.effektiverMietausfall },
     ].filter((item) => item.value > 0)
-  }, [ergebnis, grundsteuer])
+  }, [ergebnis, grundsteuer, kredithoehe, zinssatz])
 
   // Chart-Daten für Einnahmen vs Ausgaben (Bar)
   const einnahmenAusgabenData = useMemo(() => {
@@ -433,6 +439,24 @@ export function MietrenditeRechner() {
                     <SelectItem value="absolut">€/Jahr</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>
+                Grundsteuer (jährlich)
+                <InfoTooltip text="Die jährliche Grundsteuer für das Objekt." />
+              </Label>
+              <div className="relative">
+                <Input
+                  type="text"
+                  inputMode="numeric"
+                  value={grundsteuer > 0 ? grundsteuer.toLocaleString('de-DE') : ''}
+                  onChange={(e) => handleNumericInput(e.target.value, setGrundsteuer)}
+                  placeholder="0"
+                  className="pr-10"
+                />
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">€</span>
               </div>
             </div>
           </CardContent>
@@ -622,71 +646,6 @@ export function MietrenditeRechner() {
           </CardContent>
         </Card>
 
-        {/* Steuern */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="h-5 w-5 text-primary-600" />
-              Steuern
-            </CardTitle>
-            <CardDescription>Steuerliche Aspekte der Investition</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>
-                Grundsteuer (jährlich)
-                <InfoTooltip text="Die jährliche Grundsteuer für das Objekt." />
-              </Label>
-              <div className="relative">
-                <Input
-                  type="text"
-                  inputMode="numeric"
-                  value={grundsteuer > 0 ? grundsteuer.toLocaleString('de-DE') : ''}
-                  onChange={(e) => handleNumericInput(e.target.value, setGrundsteuer)}
-                  placeholder="0"
-                  className="pr-10"
-                />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">€</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>
-                  AfA-Satz
-                  <InfoTooltip text="Absetzung für Abnutzung. Standard: 2% für Gebäude ab 1925, 2,5% für ältere." />
-                </Label>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    value={afaSatz}
-                    onChange={(e) => handleDecimalInput(e.target.value, setAfaSatz)}
-                    className="pr-10"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
-                </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>
-                  Persönlicher Steuersatz
-                  <InfoTooltip text="Ihr persönlicher Einkommensteuersatz (Grenzsteuersatz)." />
-                </Label>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    inputMode="decimal"
-                    value={steuersatz}
-                    onChange={(e) => handleDecimalInput(e.target.value, setSteuersatz)}
-                    className="pr-10"
-                  />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary-400">%</span>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Ergebnisse */}
@@ -1024,7 +983,7 @@ export function MietrenditeRechner() {
                         {kostenPieData.map((_, index) => (
                           <Cell
                             key={`cell-${index}`}
-                            fill={[CHART_COLORS.primary, CHART_COLORS.secondary, CHART_COLORS.tertiary, CHART_COLORS.quaternary][index % 4]}
+                            fill={KOSTEN_COLORS[index % KOSTEN_COLORS.length]}
                           />
                         ))}
                       </Pie>
