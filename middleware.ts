@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { updateSession } from '@/lib/supabase/middleware'
 
 const COOKIE_NAME = 'mkimmo_auth'
 const COOKIE_VALUE = 'authenticated'
 
-// Pfade, die ohne Authentifizierung zugänglich sein sollen
+// Pfade, die ohne Authentifizierung zugänglich sein sollen (Site-Auth)
 const PUBLIC_PATHS = ['/login', '/api/auth']
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // Statische Dateien und API-Routen (außer /api/auth) durchlassen
+  // Statische Dateien durchlassen
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/images') ||
@@ -19,12 +20,17 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Öffentliche Pfade durchlassen
+  // Admin-Bereich: Supabase Auth verwenden
+  if (pathname.startsWith('/admin')) {
+    return updateSession(request)
+  }
+
+  // Öffentliche Pfade durchlassen (für Site-Auth)
   if (PUBLIC_PATHS.some((path) => pathname.startsWith(path))) {
     return NextResponse.next()
   }
 
-  // Auth-Cookie prüfen
+  // Site-Auth: Cookie prüfen
   const authCookie = request.cookies.get(COOKIE_NAME)
 
   if (authCookie?.value === COOKIE_VALUE) {
