@@ -102,7 +102,7 @@ export function baseTemplate(content: string, options?: { previewText?: string }
     <div class="card">
       <!-- Header -->
       <div class="header">
-        <p class="header-text">MK Immobilien</p>
+        <img src="https://moellerknabe.de/images/logomk.png" alt="MK Immobilien" style="max-height: 50px; width: auto;">
       </div>
 
       <!-- Content -->
