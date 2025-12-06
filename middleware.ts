@@ -6,7 +6,7 @@ const COOKIE_NAME = 'mkimmo_auth'
 const COOKIE_VALUE = 'authenticated'
 
 // Pfade, die ohne Authentifizierung zugänglich sein sollen (Site-Auth)
-const PUBLIC_PATHS = ['/login', '/api/auth']
+const PUBLIC_PATHS = ['/login', '/api/auth', '/api/cron']
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
