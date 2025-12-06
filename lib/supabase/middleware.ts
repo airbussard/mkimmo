@@ -2,6 +2,10 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  // Protect admin routes - check path first before Supabase call
+  const pathname = request.nextUrl.pathname
+  const isLoginPage = pathname === '/admin/login' || pathname === '/admin/login/'
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -32,36 +36,27 @@ export async function updateSession(request: NextRequest) {
   // Refresh session if expired
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser()
 
   // Debug logging
   console.log('[Admin Middleware]', {
-    pathname: request.nextUrl.pathname,
+    pathname,
+    isLoginPage,
     hasUser: !!user,
-    error: error?.message,
   })
 
-  // Protect admin routes
-  const pathname = request.nextUrl.pathname
-
-  if (pathname.startsWith('/admin')) {
-    // Allow access to login page (with or without trailing slash)
-    const isLoginPage = pathname === '/admin/login' || pathname === '/admin/login/'
-
-    if (isLoginPage) {
-      // If already logged in, redirect to dashboard
-      if (user) {
-        return NextResponse.redirect(new URL('/admin', request.url))
-      }
-      return supabaseResponse
+  // Login page: allow access if not logged in, redirect to admin if logged in
+  if (isLoginPage) {
+    if (user) {
+      return NextResponse.redirect(new URL('/admin', request.url))
     }
+    // Not logged in - show login page (no redirect!)
+    return supabaseResponse
+  }
 
-    // Redirect to login if not authenticated
-    if (!user) {
-      const loginUrl = new URL('/admin/login', request.url)
-      return NextResponse.redirect(loginUrl)
-    }
+  // All other admin pages: require authentication
+  if (!user) {
+    return NextResponse.redirect(new URL('/admin/login', request.url))
   }
 
   return supabaseResponse
