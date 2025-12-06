@@ -597,4 +597,33 @@ export class SupabaseEmailService {
 
     return true
   }
+
+  /**
+   * Setzt E-Mails die länger als X Minuten auf "processing" stehen zurück auf "pending".
+   * Verhindert dass E-Mails bei abgebrochenen Jobs hängen bleiben.
+   */
+  async resetStuckProcessingEmails(olderThanMinutes: number = 5): Promise<number> {
+    const supabase = this.getSupabase()
+    const cutoff = new Date(Date.now() - olderThanMinutes * 60 * 1000).toISOString()
+
+    console.log(`[EmailService] Checking for emails stuck in processing since before ${cutoff}`)
+
+    const { data, error } = await supabase
+      .from('email_queue')
+      .update({ status: 'pending' })
+      .eq('status', 'processing')
+      .lt('last_attempt_at', cutoff)
+      .select()
+
+    if (error) {
+      console.error('[EmailService] Error resetting stuck emails:', error)
+      return 0
+    }
+
+    if (data && data.length > 0) {
+      console.log(`[EmailService] Reset ${data.length} stuck emails:`, data.map(e => e.id))
+    }
+
+    return data?.length || 0
+  }
 }

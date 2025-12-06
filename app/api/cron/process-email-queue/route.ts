@@ -13,6 +13,12 @@ export async function GET() {
 
   const emailService = new SupabaseEmailService()
 
+  // Cleanup: Stuck "processing" E-Mails zurücksetzen (älter als 5 Minuten)
+  const resetCount = await emailService.resetStuckProcessingEmails(5)
+  if (resetCount > 0) {
+    console.log(`[Email Queue] Reset ${resetCount} stuck processing emails`)
+  }
+
   // Get email settings
   const settings = await emailService.getSettings()
   if (!settings || !settings.isActive) {
@@ -42,9 +48,13 @@ export async function GET() {
   let failed = 0
 
   for (const email of pendingEmails) {
+    console.log(`[Email Queue] Processing email ${email.id} to ${email.recipientEmail}...`)
+
     try {
+      console.log(`[Email Queue] Generating messageId...`)
       const messageId = generateMessageId()
 
+      console.log(`[Email Queue] Calling sendEmail...`)
       const result = await sendEmail(settings, {
         to: email.recipientEmail,
         toName: email.recipientName,
@@ -54,44 +64,48 @@ export async function GET() {
         messageId,
       })
 
+      console.log(`[Email Queue] sendEmail result:`, JSON.stringify(result))
+
       if (result.success) {
-        // Status auf 'sent' setzen
+        console.log(`[Email Queue] Updating status to sent...`)
         await emailService.updateQueueStatus(email.id, 'sent', {
           sentAt: new Date().toISOString(),
         })
         sent++
-        console.log(`[Email Queue] Sent: ${email.subject} to ${email.recipientEmail}`)
+        console.log(`[Email Queue] ✓ Sent: ${email.subject} to ${email.recipientEmail}`)
       } else {
+        console.log(`[Email Queue] Send failed: ${result.error}`)
         // Check if max attempts reached
         if (email.attempts + 1 >= email.maxAttempts) {
+          console.log(`[Email Queue] Max attempts reached, marking as failed`)
           await emailService.updateQueueStatus(email.id, 'failed', {
             errorMessage: result.error,
           })
           failed++
-          console.error(`[Email Queue] Failed (max attempts): ${email.subject}`)
         } else {
-          // Reset to pending for retry
+          console.log(`[Email Queue] Resetting to pending for retry`)
           await emailService.updateQueueStatus(email.id, 'pending', {
             errorMessage: result.error,
           })
-          console.warn(`[Email Queue] Will retry: ${email.subject}`)
         }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      console.error(`[Email Queue] Exception for ${email.id}:`, errorMessage)
 
+      // Bei Exception: IMMER auf pending zurücksetzen für Retry (außer max attempts erreicht)
       if (email.attempts + 1 >= email.maxAttempts) {
+        console.log(`[Email Queue] Max attempts reached, marking as failed`)
         await emailService.updateQueueStatus(email.id, 'failed', {
           errorMessage,
         })
         failed++
       } else {
+        console.log(`[Email Queue] Resetting to pending for retry`)
         await emailService.updateQueueStatus(email.id, 'pending', {
           errorMessage,
         })
       }
-
-      console.error(`[Email Queue] Error processing ${email.id}:`, errorMessage)
     }
   }
 
