@@ -65,13 +65,21 @@ export async function POST(request: Request) {
 
     // Benachrichtigungs-E-Mails an alle aktiven Mitarbeiter senden
     try {
+      console.log('[Contact API] Fetching active users for notifications...')
       const activeUsers = await userService.getActiveUsers()
+      console.log(`[Contact API] Found ${activeUsers.length} active users:`, activeUsers.map(u => u.email))
+
       if (activeUsers.length > 0) {
-        await emailService.queueNotificationEmails(result, activeUsers)
+        console.log('[Contact API] Queuing notification emails...')
+        console.log('[Contact API] Contact request:', { id: result.id, ticketNumber: result.ticketNumber, name: result.name })
+        const queued = await emailService.queueNotificationEmails(result, activeUsers)
+        console.log(`[Contact API] Successfully queued ${queued} notification emails`)
+      } else {
+        console.log('[Contact API] No active users found, skipping notifications')
       }
     } catch (notifyError) {
       // Benachrichtigungsfehler sollen die Anfrage nicht fehlschlagen lassen
-      console.error('Error sending notifications:', notifyError)
+      console.error('[Contact API] Error sending notifications:', notifyError)
     }
 
     return NextResponse.json(result, { status: 201 })
