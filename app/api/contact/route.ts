@@ -1,8 +1,12 @@
 import { NextResponse } from 'next/server'
 import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
+import { SupabaseEmailService } from '@/lib/services/supabase/SupabaseEmailService'
+import { SupabaseUserService } from '@/lib/services/supabase/SupabaseUserService'
 import { ContactRequestType } from '@/types/contact'
 
 const contactService = new SupabaseContactService()
+const emailService = new SupabaseEmailService()
+const userService = new SupabaseUserService()
 
 export async function POST(request: Request) {
   try {
@@ -51,6 +55,24 @@ export async function POST(request: Request) {
       message: body.message || undefined,
       metadata: body.metadata || undefined,
     })
+
+    if (!result) {
+      return NextResponse.json(
+        { error: 'Fehler beim Erstellen der Anfrage' },
+        { status: 500 }
+      )
+    }
+
+    // Benachrichtigungs-E-Mails an alle aktiven Mitarbeiter senden
+    try {
+      const activeUsers = await userService.getActiveUsers()
+      if (activeUsers.length > 0) {
+        await emailService.queueNotificationEmails(result, activeUsers)
+      }
+    } catch (notifyError) {
+      // Benachrichtigungsfehler sollen die Anfrage nicht fehlschlagen lassen
+      console.error('Error sending notifications:', notifyError)
+    }
 
     return NextResponse.json(result, { status: 201 })
   } catch (error) {

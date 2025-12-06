@@ -15,13 +15,9 @@ export async function GET() {
       })
     }
 
-    // Don't send password in response (mask it)
+    // Admin-Bereich: Passwörter im Klartext senden für Anzeige-Funktion
     return NextResponse.json({
-      settings: {
-        ...settings,
-        smtpPassword: settings.smtpPassword ? '********' : '',
-        imapPassword: settings.imapPassword ? '********' : '',
-      },
+      settings,
     })
   } catch (error) {
     console.error('[Email Settings] GET error:', error)

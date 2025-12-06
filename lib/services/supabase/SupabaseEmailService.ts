@@ -8,6 +8,10 @@ import type {
   EmailQueueStatus,
   UpdateEmailSettings,
 } from '@/types/email'
+import type { ContactRequest } from '@/types/contact'
+import type { User } from '@/types/user'
+import { notificationTemplate } from '@/lib/email/templates/notification'
+import { CONTACT_REQUEST_TYPE_NAMEN } from '@/types/contact'
 
 // ============================================
 // Database Row Types
@@ -372,5 +376,55 @@ export class SupabaseEmailService {
     }
 
     return mapMessageRow(data)
+  }
+
+  // ============================================
+  // Notifications
+  // ============================================
+
+  async queueNotificationEmails(
+    contactRequest: ContactRequest,
+    recipients: User[],
+    baseUrl: string = 'https://moellerknabe.de'
+  ): Promise<number> {
+    const supabase = this.getSupabase()
+    const typeName = CONTACT_REQUEST_TYPE_NAMEN[contactRequest.type] || 'Anfrage'
+    let queued = 0
+
+    for (const recipient of recipients) {
+      const adminUrl = `${baseUrl}/admin/anfragen/${contactRequest.id}`
+
+      const html = notificationTemplate({
+        requestId: contactRequest.id,
+        requestType: contactRequest.type,
+        senderName: contactRequest.name,
+        senderEmail: contactRequest.email,
+        senderPhone: contactRequest.phone,
+        messagePreview: contactRequest.message,
+        adminUrl,
+      })
+
+      const { error } = await supabase
+        .from('email_queue')
+        .insert({
+          contact_request_id: contactRequest.id,
+          recipient_email: recipient.email,
+          recipient_name: recipient.fullName,
+          subject: `Neue ${typeName} von ${contactRequest.name}`,
+          content_html: html,
+          content_text: `Neue ${typeName} von ${contactRequest.name} (${contactRequest.email}). Zur Anfrage: ${adminUrl}`,
+          type: 'notification',
+          status: 'pending',
+        })
+
+      if (error) {
+        console.error(`[EmailService] Error queuing notification for ${recipient.email}:`, error)
+      } else {
+        queued++
+      }
+    }
+
+    console.log(`[EmailService] Queued ${queued} notification emails for request ${contactRequest.id}`)
+    return queued
   }
 }

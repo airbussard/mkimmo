@@ -49,6 +49,22 @@ export class SupabaseUserService {
     return (data || []).map(mapToUser)
   }
 
+  async getActiveUsers(): Promise<User[]> {
+    const supabase = this.getClient()
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .eq('status', 'aktiv')
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      console.error('Error fetching active users:', error)
+      return []
+    }
+
+    return (data || []).map(mapToUser)
+  }
+
   async getById(id: string): Promise<User | null> {
     const supabase = this.getClient()
     const { data, error } = await supabase

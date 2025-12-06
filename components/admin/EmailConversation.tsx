@@ -1,4 +1,7 @@
-import { Mail, ArrowUpRight, ArrowDownLeft } from 'lucide-react'
+'use client'
+
+import { useState, useRef, useEffect } from 'react'
+import { Mail, ArrowUpRight, ArrowDownLeft, Maximize2, Minimize2 } from 'lucide-react'
 import type { EmailMessage } from '@/types/email'
 
 interface EmailConversationProps {
@@ -13,6 +16,86 @@ function formatDate(dateString: string): string {
     hour: '2-digit',
     minute: '2-digit',
   })
+}
+
+// Component to render HTML emails in an isolated iframe
+function HtmlEmailContent({ html }: { html: string }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null)
+  const [height, setHeight] = useState(200)
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  useEffect(() => {
+    const iframe = iframeRef.current
+    if (!iframe) return
+
+    const updateHeight = () => {
+      try {
+        const doc = iframe.contentDocument || iframe.contentWindow?.document
+        if (doc?.body) {
+          const newHeight = doc.body.scrollHeight + 20
+          setHeight(Math.min(newHeight, isExpanded ? 2000 : 400))
+        }
+      } catch {
+        // Cross-origin issues, use default height
+      }
+    }
+
+    iframe.onload = updateHeight
+    // Also try after a short delay for slower rendering
+    const timer = setTimeout(updateHeight, 500)
+
+    return () => clearTimeout(timer)
+  }, [html, isExpanded])
+
+  // Wrap HTML with basic styles for better rendering
+  const wrappedHtml = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        body {
+          margin: 0;
+          padding: 8px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          font-size: 14px;
+          line-height: 1.5;
+          color: #374151;
+          word-wrap: break-word;
+        }
+        img { max-width: 100%; height: auto; }
+        a { color: #1e3a5f; }
+        table { max-width: 100%; }
+      </style>
+    </head>
+    <body>${html}</body>
+    </html>
+  `
+
+  return (
+    <div className="relative">
+      <iframe
+        ref={iframeRef}
+        srcDoc={wrappedHtml}
+        className="w-full border-0 rounded bg-white"
+        style={{ height: `${height}px`, minHeight: '100px' }}
+        sandbox="allow-same-origin"
+        title="E-Mail-Inhalt"
+      />
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="absolute top-2 right-2 p-1 bg-white/80 rounded hover:bg-white shadow-sm"
+        title={isExpanded ? 'Verkleinern' : 'Vergrößern'}
+      >
+        {isExpanded ? (
+          <Minimize2 className="h-4 w-4 text-secondary-600" />
+        ) : (
+          <Maximize2 className="h-4 w-4 text-secondary-600" />
+        )}
+      </button>
+    </div>
+  )
 }
 
 export function EmailConversation({ messages }: EmailConversationProps) {
@@ -63,13 +146,10 @@ export function EmailConversation({ messages }: EmailConversationProps) {
 
           {/* Content */}
           <div className="text-sm text-secondary-600">
-            {message.contentText ? (
+            {message.contentHtml ? (
+              <HtmlEmailContent html={message.contentHtml} />
+            ) : message.contentText ? (
               <p className="whitespace-pre-wrap">{message.contentText}</p>
-            ) : message.contentHtml ? (
-              <div
-                className="prose prose-sm max-w-none"
-                dangerouslySetInnerHTML={{ __html: message.contentHtml }}
-              />
             ) : (
               <p className="italic text-secondary-400">Kein Inhalt</p>
             )}
