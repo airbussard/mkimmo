@@ -67,12 +67,10 @@ export async function GET() {
       console.log(`[Email Queue] sendEmail result:`, JSON.stringify(result))
 
       if (result.success) {
-        console.log(`[Email Queue] Updating status to sent...`)
-        await emailService.updateQueueStatus(email.id, 'sent', {
-          sentAt: new Date().toISOString(),
-        })
+        console.log(`[Email Queue] Deleting sent email from queue...`)
+        await emailService.deleteQueueItem(email.id)
         sent++
-        console.log(`[Email Queue] ✓ Sent: ${email.subject} to ${email.recipientEmail}`)
+        console.log(`[Email Queue] ✓ Sent and deleted: ${email.subject} to ${email.recipientEmail}`)
       } else {
         console.log(`[Email Queue] Send failed: ${result.error}`)
         // Check if max attempts reached
