@@ -1,0 +1,376 @@
+import { createAdminClient } from '@/lib/supabase/admin'
+import type {
+  EmailSettings,
+  EmailQueueItem,
+  EmailMessage,
+  CreateEmailQueueItem,
+  CreateEmailMessage,
+  EmailQueueStatus,
+  UpdateEmailSettings,
+} from '@/types/email'
+
+// ============================================
+// Database Row Types
+// ============================================
+
+interface EmailSettingsRow {
+  id: string
+  smtp_host: string
+  smtp_port: number
+  smtp_user: string
+  smtp_password: string
+  imap_host: string
+  imap_port: number
+  imap_user: string
+  imap_password: string
+  from_email: string
+  from_name: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+interface EmailQueueRow {
+  id: string
+  contact_request_id: string | null
+  recipient_email: string
+  recipient_name: string | null
+  subject: string
+  content_html: string
+  content_text: string | null
+  status: string
+  type: string
+  attempts: number
+  max_attempts: number
+  last_attempt_at: string | null
+  error_message: string | null
+  sent_at: string | null
+  created_at: string
+}
+
+interface EmailMessageRow {
+  id: string
+  contact_request_id: string
+  direction: string
+  from_email: string
+  from_name: string | null
+  to_email: string
+  subject: string | null
+  content_html: string | null
+  content_text: string | null
+  message_id: string | null
+  in_reply_to: string | null
+  read_at: string | null
+  created_at: string
+}
+
+// ============================================
+// Mappers
+// ============================================
+
+function mapSettingsRow(row: EmailSettingsRow): EmailSettings {
+  return {
+    id: row.id,
+    smtpHost: row.smtp_host,
+    smtpPort: row.smtp_port,
+    smtpUser: row.smtp_user,
+    smtpPassword: row.smtp_password,
+    imapHost: row.imap_host,
+    imapPort: row.imap_port,
+    imapUser: row.imap_user,
+    imapPassword: row.imap_password,
+    fromEmail: row.from_email,
+    fromName: row.from_name,
+    isActive: row.is_active,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function mapQueueRow(row: EmailQueueRow): EmailQueueItem {
+  return {
+    id: row.id,
+    contactRequestId: row.contact_request_id || undefined,
+    recipientEmail: row.recipient_email,
+    recipientName: row.recipient_name || undefined,
+    subject: row.subject,
+    contentHtml: row.content_html,
+    contentText: row.content_text || undefined,
+    status: row.status as EmailQueueStatus,
+    type: row.type as 'reply' | 'confirmation' | 'notification',
+    attempts: row.attempts,
+    maxAttempts: row.max_attempts,
+    lastAttemptAt: row.last_attempt_at || undefined,
+    errorMessage: row.error_message || undefined,
+    sentAt: row.sent_at || undefined,
+    createdAt: row.created_at,
+  }
+}
+
+function mapMessageRow(row: EmailMessageRow): EmailMessage {
+  return {
+    id: row.id,
+    contactRequestId: row.contact_request_id,
+    direction: row.direction as 'incoming' | 'outgoing',
+    fromEmail: row.from_email,
+    fromName: row.from_name || undefined,
+    toEmail: row.to_email,
+    subject: row.subject || undefined,
+    contentHtml: row.content_html || undefined,
+    contentText: row.content_text || undefined,
+    messageId: row.message_id || undefined,
+    inReplyTo: row.in_reply_to || undefined,
+    readAt: row.read_at || undefined,
+    createdAt: row.created_at,
+  }
+}
+
+// ============================================
+// Service Class
+// ============================================
+
+export class SupabaseEmailService {
+  private getSupabase() {
+    return createAdminClient()
+  }
+
+  // ============================================
+  // Settings
+  // ============================================
+
+  async getSettings(): Promise<EmailSettings | null> {
+    const supabase = this.getSupabase()
+    const { data, error } = await supabase
+      .from('email_settings')
+      .select('*')
+      .eq('is_active', true)
+      .single()
+
+    if (error || !data) {
+      console.error('[EmailService] Error fetching settings:', error)
+      return null
+    }
+
+    return mapSettingsRow(data)
+  }
+
+  async updateSettings(settings: UpdateEmailSettings): Promise<boolean> {
+    const supabase = this.getSupabase()
+
+    // Erst existierenden aktiven Eintrag finden
+    const { data: existing } = await supabase
+      .from('email_settings')
+      .select('id')
+      .eq('is_active', true)
+      .single()
+
+    if (existing) {
+      // Update existing
+      const { error } = await supabase
+        .from('email_settings')
+        .update({
+          smtp_host: settings.smtpHost,
+          smtp_port: settings.smtpPort,
+          smtp_user: settings.smtpUser,
+          smtp_password: settings.smtpPassword,
+          imap_host: settings.imapHost,
+          imap_port: settings.imapPort,
+          imap_user: settings.imapUser,
+          imap_password: settings.imapPassword,
+          from_email: settings.fromEmail,
+          from_name: settings.fromName,
+          is_active: settings.isActive,
+        })
+        .eq('id', existing.id)
+
+      if (error) {
+        console.error('[EmailService] Error updating settings:', error)
+        return false
+      }
+    } else {
+      // Insert new
+      const { error } = await supabase.from('email_settings').insert({
+        smtp_host: settings.smtpHost,
+        smtp_port: settings.smtpPort,
+        smtp_user: settings.smtpUser,
+        smtp_password: settings.smtpPassword,
+        imap_host: settings.imapHost,
+        imap_port: settings.imapPort,
+        imap_user: settings.imapUser,
+        imap_password: settings.imapPassword,
+        from_email: settings.fromEmail,
+        from_name: settings.fromName,
+        is_active: settings.isActive,
+      })
+
+      if (error) {
+        console.error('[EmailService] Error inserting settings:', error)
+        return false
+      }
+    }
+
+    return true
+  }
+
+  // ============================================
+  // Queue
+  // ============================================
+
+  async queueEmail(item: CreateEmailQueueItem): Promise<EmailQueueItem | null> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_queue')
+      .insert({
+        contact_request_id: item.contactRequestId || null,
+        recipient_email: item.recipientEmail,
+        recipient_name: item.recipientName || null,
+        subject: item.subject,
+        content_html: item.contentHtml,
+        content_text: item.contentText || null,
+        type: item.type,
+        status: 'pending',
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('[EmailService] Error queuing email:', error)
+      return null
+    }
+
+    return data ? mapQueueRow(data) : null
+  }
+
+  async getPendingEmails(limit: number = 10): Promise<EmailQueueItem[]> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_queue')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: true })
+      .limit(limit)
+
+    if (error) {
+      console.error('[EmailService] Error fetching pending emails:', error)
+      return []
+    }
+
+    return (data || []).map(mapQueueRow)
+  }
+
+  async updateQueueStatus(
+    id: string,
+    status: EmailQueueStatus,
+    options?: {
+      errorMessage?: string
+      sentAt?: string
+    }
+  ): Promise<boolean> {
+    const supabase = this.getSupabase()
+
+    const updateData: Record<string, unknown> = {
+      status,
+      last_attempt_at: new Date().toISOString(),
+    }
+
+    if (status === 'failed' && options?.errorMessage) {
+      updateData.error_message = options.errorMessage
+    }
+
+    if (status === 'sent' && options?.sentAt) {
+      updateData.sent_at = options.sentAt
+    }
+
+    // Increment attempts
+    const { data: current } = await supabase
+      .from('email_queue')
+      .select('attempts')
+      .eq('id', id)
+      .single()
+
+    if (current) {
+      updateData.attempts = current.attempts + 1
+    }
+
+    const { error } = await supabase
+      .from('email_queue')
+      .update(updateData)
+      .eq('id', id)
+
+    if (error) {
+      console.error('[EmailService] Error updating queue status:', error)
+      return false
+    }
+
+    return true
+  }
+
+  // ============================================
+  // Messages
+  // ============================================
+
+  async createMessage(message: CreateEmailMessage): Promise<EmailMessage | null> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_messages')
+      .insert({
+        contact_request_id: message.contactRequestId,
+        direction: message.direction,
+        from_email: message.fromEmail,
+        from_name: message.fromName || null,
+        to_email: message.toEmail,
+        subject: message.subject || null,
+        content_html: message.contentHtml || null,
+        content_text: message.contentText || null,
+        message_id: message.messageId || null,
+        in_reply_to: message.inReplyTo || null,
+      })
+      .select()
+      .single()
+
+    if (error) {
+      console.error('[EmailService] Error creating message:', error)
+      return null
+    }
+
+    return data ? mapMessageRow(data) : null
+  }
+
+  async getMessagesByContactRequest(contactRequestId: string): Promise<EmailMessage[]> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_messages')
+      .select('*')
+      .eq('contact_request_id', contactRequestId)
+      .order('created_at', { ascending: true })
+
+    if (error) {
+      console.error('[EmailService] Error fetching messages:', error)
+      return []
+    }
+
+    return (data || []).map(mapMessageRow)
+  }
+
+  async getLastMessageByContactRequest(contactRequestId: string): Promise<EmailMessage | null> {
+    const supabase = this.getSupabase()
+
+    const { data, error } = await supabase
+      .from('email_messages')
+      .select('*')
+      .eq('contact_request_id', contactRequestId)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
+
+    if (error || !data) {
+      return null
+    }
+
+    return mapMessageRow(data)
+  }
+}

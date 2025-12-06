@@ -66,6 +66,12 @@ const navigation = [
     name: 'Einstellungen',
     href: '/admin/einstellungen',
     icon: Settings,
+    children: [
+      { name: 'Allgemein', href: '/admin/einstellungen' },
+      { name: 'E-Mail', href: '/admin/einstellungen/email' },
+      { name: 'Firma', href: '/admin/einstellungen/firma' },
+      { name: 'Steuern', href: '/admin/einstellungen/steuern' },
+    ],
   },
 ]
 

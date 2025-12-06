@@ -1,11 +1,14 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Mail, Phone, Calendar, Tag, MessageSquare, Building2 } from 'lucide-react'
+import { ArrowLeft, Mail, Phone, Calendar, Tag, MessageSquare, Building2, Send } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
+import { SupabaseEmailService } from '@/lib/services/supabase/SupabaseEmailService'
 import { CONTACT_REQUEST_TYPE_NAMEN } from '@/types/contact'
 import { ContactStatusSelect } from '@/components/admin/ContactStatusSelect'
 import { ContactNotesEditor } from '@/components/admin/ContactNotesEditor'
+import { EmailReplyForm } from '@/components/admin/EmailReplyForm'
+import { EmailConversation } from '@/components/admin/EmailConversation'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -24,7 +27,12 @@ function formatDate(dateString: string): string {
 export default async function AnfrageDetailPage({ params }: PageProps) {
   const { id } = await params
   const contactService = new SupabaseContactService()
-  const request = await contactService.getById(id)
+  const emailService = new SupabaseEmailService()
+
+  const [request, emailMessages] = await Promise.all([
+    contactService.getById(id),
+    emailService.getMessagesByContactRequest(id),
+  ])
 
   if (!request) {
     notFound()
@@ -117,6 +125,39 @@ export default async function AnfrageDetailPage({ params }: PageProps) {
               </CardContent>
             </Card>
           )}
+
+          {/* E-Mail-Kommunikation */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Send className="h-5 w-5 text-primary-600" />
+                E-Mail-Kommunikation
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Bisherige Nachrichten */}
+              {emailMessages.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-medium text-secondary-700 mb-3">
+                    Nachrichtenverlauf
+                  </h4>
+                  <EmailConversation messages={emailMessages} />
+                </div>
+              )}
+
+              {/* Antwort-Formular */}
+              <div className={emailMessages.length > 0 ? 'pt-4 border-t' : ''}>
+                <h4 className="text-sm font-medium text-secondary-700 mb-3">
+                  Antwort senden
+                </h4>
+                <EmailReplyForm
+                  requestId={request.id}
+                  recipientName={request.name}
+                  recipientEmail={request.email}
+                />
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Interne Notizen */}
           <Card>
