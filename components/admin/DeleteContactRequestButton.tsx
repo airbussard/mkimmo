@@ -14,7 +14,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { SupabaseContactService } from '@/lib/services/supabase/SupabaseContactService'
 
 interface DeleteContactRequestButtonProps {
   requestId: string
@@ -32,10 +31,13 @@ export function DeleteContactRequestButton({
   const handleDelete = async () => {
     setLoading(true)
     try {
-      const contactService = new SupabaseContactService()
-      const success = await contactService.delete(requestId)
+      const response = await fetch(`/api/admin/anfragen/${requestId}`, {
+        method: 'DELETE',
+      })
 
-      if (success) {
+      const data = await response.json()
+
+      if (data.success) {
         setOpen(false)
         router.refresh()
       } else {
