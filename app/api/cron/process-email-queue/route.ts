@@ -204,7 +204,7 @@ export async function GET() {
 
   return NextResponse.json({
     success: true,
-    processed: pendingEmails.length,
+    processed: claimedEmails.length,
     sent,
     failed,
   })
