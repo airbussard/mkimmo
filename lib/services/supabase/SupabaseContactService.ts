@@ -216,7 +216,31 @@ export class SupabaseContactService {
 
   async delete(id: string): Promise<boolean> {
     const supabase = this.getSupabase()
-    const { error } = await supabase.from('contact_requests').delete().eq('id', id)
+
+    // Erst zugehörige E-Mails aus Queue und Messages löschen (FK-Constraint)
+    const { error: queueError } = await supabase
+      .from('email_queue')
+      .delete()
+      .eq('contact_request_id', id)
+
+    if (queueError) {
+      console.error('Error deleting email queue items:', queueError)
+    }
+
+    const { error: messagesError } = await supabase
+      .from('email_messages')
+      .delete()
+      .eq('contact_request_id', id)
+
+    if (messagesError) {
+      console.error('Error deleting email messages:', messagesError)
+    }
+
+    // Dann die Anfrage selbst löschen
+    const { error } = await supabase
+      .from('contact_requests')
+      .delete()
+      .eq('id', id)
 
     if (error) {
       console.error('Error deleting contact request:', error)
