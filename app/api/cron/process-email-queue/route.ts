@@ -76,6 +76,18 @@ export async function GET() {
 
   const settings = mapSettingsRow(settingsData)
 
+  // Debug: Test mit einfacher Query ohne Filter
+  const { data: allEmails, error: allError } = await supabase
+    .from('email_queue')
+    .select('id, status, attempts')
+    .limit(5)
+
+  console.log('[Email Queue] ALL emails (no filter):', {
+    count: allEmails?.length ?? 0,
+    error: allError?.message ?? null,
+    emails: allEmails
+  })
+
   // Get pending emails (FlightHourWeb pattern: simple select with attempts filter)
   const { data: pendingEmails, error: fetchError } = await supabase
     .from('email_queue')
