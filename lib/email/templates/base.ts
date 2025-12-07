@@ -38,11 +38,13 @@ export function baseTemplate(content: string, options?: { previewText?: string }
       border-radius: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
       overflow: hidden;
+      border: 3px solid #1e3a5f;
     }
     .header {
-      background-color: #1e3a5f;
+      background-color: #ffffff;
       padding: 24px;
       text-align: center;
+      border-bottom: 2px solid #1e3a5f;
     }
     .header img {
       max-height: 40px;

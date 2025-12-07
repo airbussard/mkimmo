@@ -17,10 +17,6 @@ export function replyTemplate(options: ReplyTemplateOptions): string {
     .join('')
 
   const content = `
-    <p>Guten Tag ${recipientName},</p>
-
-    <div class="divider"></div>
-
     ${formattedMessage}
 
     <div class="divider"></div>
@@ -51,10 +47,8 @@ export function confirmationTemplate(options: ConfirmationTemplateOptions): stri
   const { name, requestType, ticketNumber } = options
 
   const content = `
-    <p>Guten Tag ${name},</p>
-
     <p>
-      vielen Dank für Ihre ${requestType}. Wir haben Ihre Anfrage erhalten und werden uns
+      Vielen Dank für Ihre ${requestType}. Wir haben Ihre Anfrage erhalten und werden uns
       schnellstmöglich bei Ihnen melden.
     </p>
 
