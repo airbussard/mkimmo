@@ -54,6 +54,8 @@ function mapSettingsRow(row: EmailSettingsRow): EmailSettings {
 
 export async function GET() {
   console.log('[Email Queue] Starting processing...')
+  console.log('[Email Queue] Service Key exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
+  console.log('[Email Queue] Service Key prefix:', process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10))
 
   const supabase = createAdminClient()
 
@@ -82,6 +84,12 @@ export async function GET() {
     .lt('attempts', 3)
     .order('created_at', { ascending: true })
     .limit(10)
+
+  console.log('[Email Queue] Fetch result:', {
+    count: pendingEmails?.length ?? 0,
+    error: fetchError?.message ?? null,
+    firstEmail: pendingEmails?.[0]?.id ?? null
+  })
 
   if (fetchError) {
     console.error('[Email Queue] Error fetching emails:', fetchError)
