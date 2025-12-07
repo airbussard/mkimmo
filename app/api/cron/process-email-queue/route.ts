@@ -142,7 +142,7 @@ export async function GET() {
 
       if (result.success) {
         // Mark as sent (FlightHourWeb pattern)
-        const { error: updateError } = await supabase
+        const { data: updateData, error: updateError, count } = await supabase
           .from('email_queue')
           .update({
             status: 'sent',
@@ -150,6 +150,14 @@ export async function GET() {
             error_message: null,
           })
           .eq('id', email.id)
+          .select()
+
+        console.log('[Email Queue] UPDATE result:', {
+          emailId: email.id,
+          updateData: updateData,
+          error: updateError?.message ?? null,
+          count: count
+        })
 
         if (updateError) {
           console.error('[Email Queue] Error updating to sent:', updateError)
