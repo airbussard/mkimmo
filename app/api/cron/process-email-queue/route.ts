@@ -54,8 +54,6 @@ function mapSettingsRow(row: EmailSettingsRow): EmailSettings {
 
 export async function GET() {
   console.log('[Email Queue] Starting processing...')
-  console.log('[Email Queue] Service Key exists:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
-  console.log('[Email Queue] Service Key prefix:', process.env.SUPABASE_SERVICE_ROLE_KEY?.substring(0, 10))
 
   const supabase = createAdminClient()
 
@@ -76,42 +74,28 @@ export async function GET() {
 
   const settings = mapSettingsRow(settingsData)
 
-  // Debug: Test mit einfacher Query ohne Filter
-  const { data: allEmails, error: allError } = await supabase
+  // ATOMIC CLAIM: Update pending emails to processing AND return them in one step
+  // This prevents race conditions where multiple cron jobs process the same emails
+  const { data: claimedEmails, error: claimError } = await supabase
     .from('email_queue')
-    .select('id, status, attempts')
-    .limit(5)
-
-  console.log('[Email Queue] ALL emails (no filter):', {
-    count: allEmails?.length ?? 0,
-    error: allError?.message ?? null,
-    emails: allEmails
-  })
-
-  // Get pending emails (FlightHourWeb pattern: simple select with attempts filter)
-  const { data: pendingEmails, error: fetchError } = await supabase
-    .from('email_queue')
-    .select('*')
+    .update({
+      status: 'processing',
+      last_attempt_at: new Date().toISOString(),
+    })
     .eq('status', 'pending')
     .lt('attempts', 3)
-    .order('created_at', { ascending: true })
+    .select('*')
     .limit(10)
 
-  console.log('[Email Queue] Fetch result:', {
-    count: pendingEmails?.length ?? 0,
-    error: fetchError?.message ?? null,
-    firstEmail: pendingEmails?.[0]?.id ?? null
-  })
-
-  if (fetchError) {
-    console.error('[Email Queue] Error fetching emails:', fetchError)
+  if (claimError) {
+    console.error('[Email Queue] Error claiming emails:', claimError)
     return NextResponse.json({
       success: false,
-      error: fetchError.message,
+      error: claimError.message,
     })
   }
 
-  if (!pendingEmails || pendingEmails.length === 0) {
+  if (!claimedEmails || claimedEmails.length === 0) {
     console.log('[Email Queue] No pending emails')
     return NextResponse.json({
       success: true,
@@ -120,23 +104,19 @@ export async function GET() {
     })
   }
 
-  console.log(`[Email Queue] Processing ${pendingEmails.length} emails`)
+  console.log(`[Email Queue] Claimed ${claimedEmails.length} emails for processing`)
 
   let sent = 0
   let failed = 0
 
-  for (const email of pendingEmails as EmailQueueRow[]) {
+  for (const email of claimedEmails as EmailQueueRow[]) {
     console.log(`[Email Queue] Processing ${email.id} (attempt ${email.attempts + 1}/3)`)
 
     try {
-      // Mark as processing
+      // Increment attempts
       await supabase
         .from('email_queue')
-        .update({
-          status: 'processing',
-          last_attempt_at: new Date().toISOString(),
-          attempts: email.attempts + 1,
-        })
+        .update({ attempts: email.attempts + 1 })
         .eq('id', email.id)
 
       const messageId = generateMessageId()
@@ -153,8 +133,8 @@ export async function GET() {
       console.log(`[Email Queue] sendEmail result:`, JSON.stringify(result))
 
       if (result.success) {
-        // Mark as sent (FlightHourWeb pattern)
-        const { data: updateData, error: updateError, count } = await supabase
+        // Mark as sent
+        const { error: updateError } = await supabase
           .from('email_queue')
           .update({
             status: 'sent',
@@ -162,14 +142,6 @@ export async function GET() {
             error_message: null,
           })
           .eq('id', email.id)
-          .select()
-
-        console.log('[Email Queue] UPDATE result:', {
-          emailId: email.id,
-          updateData: updateData,
-          error: updateError?.message ?? null,
-          count: count
-        })
 
         if (updateError) {
           console.error('[Email Queue] Error updating to sent:', updateError)
