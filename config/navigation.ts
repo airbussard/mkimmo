@@ -44,6 +44,10 @@ export const MAKLER_NAVIGATION: NavItem[] = [
     href: '/makler/verkaufen',
   },
   {
+    titel: 'Kostenlose Ersteinschätzung',
+    href: '/makler/ersteinschaetzung',
+  },
+  {
     titel: 'Rechner',
     href: '#',
     children: [

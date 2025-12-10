@@ -2,6 +2,7 @@ export type ContactRequestType =
   | 'makler_kontakt'
   | 'makler_verkauf'
   | 'makler_anfrage'
+  | 'makler_ersteinschaetzung'
   | 'hv_kontakt'
   | 'hv_anfrage'
   | 'allgemein'
@@ -10,6 +11,7 @@ export const CONTACT_REQUEST_TYPE_NAMEN: Record<ContactRequestType, string> = {
   makler_kontakt: 'Makler - Kontakt',
   makler_verkauf: 'Makler - Verkaufsanfrage',
   makler_anfrage: 'Makler - Immobilienanfrage',
+  makler_ersteinschaetzung: 'Makler - Ersteinschätzung',
   hv_kontakt: 'Hausverwaltung - Kontakt',
   hv_anfrage: 'Hausverwaltung - Anfrage',
   allgemein: 'Allgemeine Anfrage',

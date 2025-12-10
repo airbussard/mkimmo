@@ -35,6 +35,7 @@ export async function POST(request: Request) {
       'makler_kontakt',
       'makler_anfrage',
       'makler_verkauf',
+      'makler_ersteinschaetzung',
       'hv_kontakt',
       'hv_anfrage',
     ]
