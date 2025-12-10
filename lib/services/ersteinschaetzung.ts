@@ -14,35 +14,56 @@ function getLabelsForValues(options: { value: string; label: string }[], values:
 }
 
 function formatErsteinschaetzungMessage(data: ErsteinschaetzungData): string {
-  const lines = [
-    '=== IMMOBILIEN-ERSTEINSCHÄTZUNG ===',
+  const besonderheitenList = data.besonderheiten.length > 0
+    ? data.besonderheiten.map(b => `  - ${getLabelForValue(BESONDERHEITEN, b)}`).join('\n')
+    : '  Keine'
+
+  const infrastrukturList = data.infrastruktur.length > 0
+    ? data.infrastruktur.map(i => `  - ${getLabelForValue(INFRASTRUKTUR, i)}`).join('\n')
+    : '  Keine Angaben'
+
+  const sections = [
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+    '       IMMOBILIEN-ERSTEINSCHAETZUNG',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
     '',
-    '📍 BASISDATEN',
-    `Immobilientyp: ${getLabelForValue(IMMOBILIENTYPEN, data.immobilientyp)}`,
-    `Standort: ${data.plz} ${data.ort}`,
-    `Baujahr: ${data.baujahr}`,
-    `Zustand: ${getLabelForValue(ZUSTAENDE, data.zustand)}`,
+    'BASISDATEN',
+    '─────────────────────────────────────────',
+    `Immobilientyp:  ${getLabelForValue(IMMOBILIENTYPEN, data.immobilientyp)}`,
+    `Standort:       ${data.plz} ${data.ort}`,
+    `Baujahr:        ${data.baujahr}`,
+    `Zustand:        ${getLabelForValue(ZUSTAENDE, data.zustand)}`,
     '',
-    '📐 FLÄCHEN & AUSSTATTUNG',
-    `Wohnfläche: ${data.wohnflaeche} m²`,
-    data.grundstuecksflaeche ? `Grundstücksfläche: ${data.grundstuecksflaeche} m²` : null,
-    `Anzahl Zimmer: ${data.anzahlZimmer}`,
-    `Besonderheiten: ${getLabelsForValues(BESONDERHEITEN, data.besonderheiten)}`,
+    'FLAECHEN & AUSSTATTUNG',
+    '─────────────────────────────────────────',
+    `Wohnflaeche:    ${data.wohnflaeche} m2`,
+    data.grundstuecksflaeche ? `Grundstueck:    ${data.grundstuecksflaeche} m2` : null,
+    `Zimmer:         ${data.anzahlZimmer}`,
     '',
-    '🏠 NUTZUNG',
-    `Aktuelle Nutzung: ${getLabelForValue(NUTZUNGSARTEN, data.nutzung)}`,
-    data.nutzung === 'vermietet' ? `Jahresnettokaltmiete: ${data.jahresnettokaltmiete} EUR` : null,
+    'Besonderheiten:',
+    besonderheitenList,
     '',
-    '📍 LAGE',
-    `Mikrolage: ${getLabelForValue(MIKROLAGEN, data.mikrolage)}`,
-    data.makrolage ? `Makrolage: ${data.makrolage}` : null,
-    `Infrastruktur: ${getLabelsForValues(INFRASTRUKTUR, data.infrastruktur)}`,
+    'NUTZUNG',
+    '─────────────────────────────────────────',
+    `Aktuell:        ${getLabelForValue(NUTZUNGSARTEN, data.nutzung)}`,
+    data.nutzung === 'vermietet' ? `Jahreskaltmiete: ${data.jahresnettokaltmiete} EUR` : null,
     '',
-    '💬 ZUSÄTZLICHE HINWEISE',
-    data.nachricht || 'Keine zusätzlichen Hinweise',
+    'LAGE',
+    '─────────────────────────────────────────',
+    `Mikrolage:      ${getLabelForValue(MIKROLAGEN, data.mikrolage)}`,
+    data.makrolage ? `Makrolage:      ${data.makrolage}` : null,
+    '',
+    'Infrastruktur:',
+    infrastrukturList,
+    '',
+    'ZUSAETZLICHE HINWEISE',
+    '─────────────────────────────────────────',
+    data.nachricht || 'Keine zusaetzlichen Hinweise angegeben.',
+    '',
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
   ]
 
-  return lines.filter(Boolean).join('\n')
+  return sections.filter(Boolean).join('\n')
 }
 
 export async function submitErsteinschaetzung(data: ErsteinschaetzungData): Promise<SubmitResult> {
@@ -62,20 +83,20 @@ export async function submitErsteinschaetzung(data: ErsteinschaetzungData): Prom
         message: message,
         metadata: {
           // Alle strukturierten Daten für spätere Auswertung
-          immobilientyp: data.immobilientyp,
+          immobilientyp: getLabelForValue(IMMOBILIENTYPEN, data.immobilientyp),
           plz: data.plz,
           ort: data.ort,
           baujahr: data.baujahr,
-          zustand: data.zustand,
-          wohnflaeche: data.wohnflaeche,
-          grundstuecksflaeche: data.grundstuecksflaeche || null,
+          zustand: getLabelForValue(ZUSTAENDE, data.zustand),
+          wohnflaeche: `${data.wohnflaeche} m2`,
+          grundstuecksflaeche: data.grundstuecksflaeche ? `${data.grundstuecksflaeche} m2` : null,
           anzahlZimmer: data.anzahlZimmer,
-          besonderheiten: data.besonderheiten,
-          nutzung: data.nutzung,
-          jahresnettokaltmiete: data.jahresnettokaltmiete || null,
-          mikrolage: data.mikrolage,
+          besonderheiten: getLabelsForValues(BESONDERHEITEN, data.besonderheiten),
+          nutzung: getLabelForValue(NUTZUNGSARTEN, data.nutzung),
+          jahresnettokaltmiete: data.jahresnettokaltmiete ? `${data.jahresnettokaltmiete} EUR` : null,
+          mikrolage: getLabelForValue(MIKROLAGEN, data.mikrolage),
           makrolage: data.makrolage || null,
-          infrastruktur: data.infrastruktur,
+          infrastruktur: getLabelsForValues(INFRASTRUKTUR, data.infrastruktur),
         },
       }),
     })
