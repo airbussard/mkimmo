@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Home, TrendingUp, Users, Award, Clock, CheckCircle, ArrowRight, Calculator, Key } from 'lucide-react'
+import { Home, TrendingUp, Users, Award, Clock, CheckCircle, ArrowRight, Calculator, Key, FileSearch } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { COMPANY_INFO } from '@/config/navigation'
 import { HeroSlider, Slide } from '@/components/HeroSlider'
@@ -22,21 +22,22 @@ const maklerSlides: Slide[] = [
       icon: <Home className="w-5 h-5 mr-2" />,
     },
     ctaSecondary: {
-      text: 'Kaufnebenkosten berechnen',
-      href: '/makler/kaufnebenkosten-rechner',
+      text: 'Kostenlose Ersteinschätzung',
+      href: '/makler/ersteinschaetzung',
     },
   },
   {
     image: '/slider/IMG_8492.JPG',
-    title: 'Persönliche Beratung',
-    subtitle: 'Individuelle Betreuung von der ersten Besichtigung bis zum Notartermin',
+    title: 'Was ist Ihre Immobilie wert?',
+    subtitle: 'Kostenlose und unverbindliche Ersteinschätzung in nur 5 Minuten',
     cta: {
-      text: 'Kontakt aufnehmen',
-      href: '/makler/kontakt',
+      text: 'Jetzt Wert ermitteln',
+      href: '/makler/ersteinschaetzung',
+      icon: <FileSearch className="w-5 h-5 mr-2" />,
     },
     ctaSecondary: {
-      text: 'Über uns',
-      href: '/makler/ueber-uns',
+      text: 'Mehr erfahren',
+      href: '/makler/verkaufen',
     },
   },
   {
@@ -175,6 +176,37 @@ export default function MaklerLandingPage() {
                   Ein fester Ansprechpartner begleitet Sie durch den gesamten Prozess.
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Ersteinschätzung CTA Section */}
+      <section className="py-16 md:py-20 bg-secondary-50">
+        <div className="container mx-auto px-4">
+          <div className="max-w-4xl mx-auto text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 mb-6">
+              <FileSearch className="w-8 h-8 text-primary-600" />
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold text-secondary-900 mb-4">
+              Was ist Ihre Immobilie wert?
+            </h2>
+            <p className="text-lg text-secondary-600 mb-8 max-w-2xl mx-auto">
+              Erhalten Sie in nur 5 Minuten eine kostenlose und unverbindliche Ersteinschätzung
+              für Ihre Immobilie – basierend auf aktuellen Marktdaten und unserer lokalen Expertise.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button asChild size="lg" className="text-lg px-8">
+                <Link href="/makler/ersteinschaetzung">
+                  <FileSearch className="w-5 h-5 mr-2" />
+                  Kostenlose Ersteinschätzung
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link href="/makler/verkaufen">
+                  Mehr zum Verkauf erfahren
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
