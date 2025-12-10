@@ -1,10 +1,27 @@
+'use client'
+
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Mail, Phone, MapPin } from 'lucide-react'
 import { FOOTER_NAVIGATION, COMPANY_INFO } from '@/config/navigation'
 import { APP_VERSION } from '@/config/version'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
+  const pathname = usePathname()
+
+  // Bestimme den "anderen Bereich" basierend auf dem aktuellen Pfad
+  const getOtherSection = () => {
+    if (pathname.startsWith('/makler')) {
+      return { titel: 'Hausverwaltung', href: '/hausverwaltung' }
+    }
+    if (pathname.startsWith('/hausverwaltung')) {
+      return { titel: 'Makler', href: '/makler' }
+    }
+    return null
+  }
+
+  const otherSection = getOtherSection()
 
   return (
     <footer className="bg-secondary-900 text-secondary-100">
@@ -56,7 +73,22 @@ export function Footer() {
           <div>
             <h3 className="text-lg font-semibold text-white mb-4">Services</h3>
             <ul className="space-y-2 text-sm">
-              {FOOTER_NAVIGATION.services.map((link) => (
+              {otherSection && (
+                <li>
+                  <Link href={otherSection.href} className="hover:text-primary-400 transition-colors font-medium">
+                    {otherSection.titel}
+                  </Link>
+                </li>
+              )}
+              {FOOTER_NAVIGATION.services
+                .filter(link => {
+                  // Im Makler-Bereich: Makler-Link ausblenden
+                  if (pathname.startsWith('/makler') && link.href === '/makler') return false
+                  // Im HV-Bereich: HV-Link ausblenden
+                  if (pathname.startsWith('/hausverwaltung') && link.href === '/hausverwaltung') return false
+                  return true
+                })
+                .map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="hover:text-primary-400 transition-colors">
                     {link.titel}

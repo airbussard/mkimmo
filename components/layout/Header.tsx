@@ -25,6 +25,16 @@ function getNavigationForPath(pathname: string): NavItem[] {
   return DEFAULT_NAVIGATION
 }
 
+function getLogoLinkForPath(pathname: string): string {
+  if (pathname.startsWith('/makler')) {
+    return '/makler'
+  }
+  if (pathname.startsWith('/hausverwaltung')) {
+    return '/hausverwaltung'
+  }
+  return '/'
+}
+
 function NavLink({ item, isActive }: { item: NavItem; isActive: boolean }) {
   return (
     <Link
@@ -91,13 +101,14 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
   const navigation = getNavigationForPath(pathname)
+  const logoLink = getLogoLinkForPath(pathname)
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto px-4">
         <div className="flex h-24 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href={logoLink} className="flex items-center space-x-2">
             <Image
               src="/images/logomk.png"
               alt={COMPANY_INFO.name}

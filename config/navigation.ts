@@ -29,7 +29,7 @@ export const DEFAULT_NAVIGATION: NavItem[] = [
 export const MAKLER_NAVIGATION: NavItem[] = [
   {
     titel: 'Startseite',
-    href: '/',
+    href: '/makler',
   },
   {
     titel: 'Kaufen',
@@ -82,7 +82,7 @@ export const MAKLER_NAVIGATION: NavItem[] = [
 export const HAUSVERWALTUNG_NAVIGATION: NavItem[] = [
   {
     titel: 'Startseite',
-    href: '/',
+    href: '/hausverwaltung',
   },
   {
     titel: 'Objekte',
