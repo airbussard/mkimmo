@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Maximum allowed cookie header size (nginx default is ~4KB, we use 3KB to be safe)
+const MAX_COOKIE_SIZE = 3000
+
 export async function updateSession(request: NextRequest) {
   // Protect admin routes - check path first before Supabase call
   const pathname = request.nextUrl.pathname
@@ -9,6 +12,22 @@ export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
+
+  // Check if cookies are too large and clear them if necessary
+  const cookieHeader = request.headers.get('cookie') || ''
+  if (cookieHeader.length > MAX_COOKIE_SIZE) {
+    console.log('[Admin Middleware] Cookie header too large, clearing Supabase cookies')
+
+    // Clear all Supabase auth cookies
+    const response = NextResponse.redirect(new URL('/admin/login', request.url))
+    const supabaseCookies = request.cookies.getAll().filter(c =>
+      c.name.startsWith('sb-') || c.name.includes('supabase')
+    )
+    supabaseCookies.forEach(cookie => {
+      response.cookies.delete(cookie.name)
+    })
+    return response
+  }
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
